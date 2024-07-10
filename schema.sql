@@ -21,7 +21,14 @@ CREATE TABLE public.users (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
     email TEXT NOT NULL UNIQUE,
-    username TEXT NOT NULL
+    username TEXT NOT NULL,
+    icon uuid,
+    bio TEXT,
+    status jsonb NOT NULL DEFAULT '{}',  /* Json Object. See docs/database.md#status */  /* TODO: Actually do this small documentation */
+    last_online TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    is_online BOOLEAN NOT NULL DEFAULT FALSE,
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE public.files (
@@ -74,13 +81,30 @@ CREATE TABLE public.user_roles(
 
 CREATE TABLE public.guild_members(
     user_id uuid NOT NULL,
-    guild_id uuid NOT NULL
+    guild_id uuid NOT NULL,
+    nickname TEXT,
+    profile_picture uuid NOT NULL  /* Set the default profile picture to be the user's profile picture */
 );
+
+
+
 
 CREATE TABLE public.channel_members(
     user_id uuid NOT NULL,
     channel_id uuid NOT NULL,
     permissions INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE public.invites(
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    guild_id uuid NOT NULL,
+    channel_id uuid NOT NULL,
+    created_by uuid NOT NULL,
+    uses INT NOT NULL DEFAULT 1,
+    expires_at TIMESTAMP,
+    target_user uuid,
+    code TEXT NOT NULL DEFAULT id
 );
 
 CREATE TABLE secured.passwords (
@@ -99,6 +123,20 @@ CREATE TABLE secured.two_factor (
 /* Create checks */
 ALTER TABLE public.channels
     ADD CONSTRAINT channel_type_check CHECK (type >= 0 AND type <= 2);
+
+
+/* Create triggers */
+CREATE TRIGGER set_default_profile_picture
+    BEFORE INSERT ON public.guild_members
+EXECUTE FUNCTION set_default_profile_picture();
+
+CREATE OR REPLACE FUNCTION set_default_profile_picture()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.profile_picture = (SELECT icon FROM public.users WHERE id = NEW.user_id);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 
 /* Create Rules */
