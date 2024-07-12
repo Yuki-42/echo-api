@@ -2,7 +2,7 @@
 Tool to convert checkbox permissions to permissions integer.
 """
 
-from tkinter import Tk, Variable, ttk
+from tkinter import Tk, Variable, ttk, BooleanVar
 from tkinter.ttk import Frame, Notebook
 
 
@@ -32,56 +32,187 @@ def convert_boolean_list(permissions: list[bool]) -> int:
     return int("".join(map(str, map(int, permissions))), 2)
 
 
+class PermissionsCalculatorWindow:
+    """
+    Permissions Calculator Window.
+    """
+    root: Tk
+    tab_control: Notebook
+    tabs: list[Frame]
+    permission_values: list[list[BooleanVar]]
+    permission_checkboxes: list[list[ttk.Checkbutton]]
+    interface_values: list[Variable]
+    interface_boxes: list[ttk.Entry]
+
+    def __init__(self):
+        """
+        Initialize the Permissions Calculator Window.
+        """
+        # Create Tkinter root window
+        self.root: Tk = Tk()
+        self.root.title = "Disbroad Permissions Tool"
+
+        # Create Tab Control and add tabs
+        self.tab_control: Notebook = ttk.Notebook(self.root)
+        self.tabs: list[Frame] = [
+            ttk.Frame(self.tab_control),
+            ttk.Frame(self.tab_control),
+            ttk.Frame(self.tab_control)
+        ]
+
+        self.tab_control.add(self.tabs[0], text="Guild Permissions")
+        self.tab_control.add(self.tabs[1], text="Text Permissions")
+        self.tab_control.add(self.tabs[2], text="Voice Permissions")
+
+        self.tab_control.pack(expand=1, fill="both")
+
+        # Add titles for content in tabs
+        guild_permissions_tab_label: ttk.Label = ttk.Label(self.tabs[0], text="Guild Permissions")
+        guild_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
+
+        text_permissions_tab_label: ttk.Label = ttk.Label(self.tabs[1], text="Text Permissions")
+        text_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
+
+        voice_permissions_tab_label: ttk.Label = ttk.Label(self.tabs[2], text="Voice Permissions")
+        voice_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
+
+        # Prefill the boolean variables
+        self.permission_values: list[list[BooleanVar]] = [
+            [BooleanVar(self.tabs[0], False) for i in range(32)],
+            [BooleanVar(self.tabs[1], False) for i in range(32)],
+            [BooleanVar(self.tabs[2], False) for i in range(32)]
+        ]
+
+        self.interface_values: list[Variable] = [
+            Variable(self.tabs[0], False),
+            Variable(self.tabs[1], False),
+            Variable(self.tabs[2], False)
+        ]
+
+        # Create the interface boxes for the guild permissions tab
+        self.interface_boxes: list[ttk.Entry] = [
+            ttk.Entry(self.tabs[0], textvariable=self.interface_values[0]),
+            ttk.Entry(self.tabs[1], textvariable=self.interface_values[1]),
+            ttk.Entry(self.tabs[2], textvariable=self.interface_values[2])
+        ]
+
+        # Add all content for guild permissions tab
+        guild_permissions_text: list = [
+            "Administrator", "View Audit Logs", "View Insights", "Manage Guild", "Delete Roles",
+            "Create Roles", "Manage Roles", "Remove Roles", "Assign Roles", "Delete Channels",
+            "Create Channels", "Manage Channels", "Unban Members", "Ban Members", "Kick Members",
+            "Manage Members", "Manage Invites", "Delete Emojis", "Create Emojis", "Manage Emojis",
+            "Delete Stickers", "Create Stickers", "Manage Stickers", "Delete Webhooks", "Create Webhooks",
+            "Manage Webhooks", "Delete Events", "Create Events", "Manage Events", "Send Invites",
+            "Not Used", "Not Used"
+        ]
+
+        guild_permissions: list[ttk.Checkbutton] = []
+
+        for i, permission in enumerate(guild_permissions_text):
+            guild_permissions.append(ttk.Checkbutton(self.tabs[0], text=permission, variable=self.permission_values[0][i], command=self._recalculate_guild_permissions))
+
+        items_in_column_counter: int = 0
+        current_row: int = 1
+        for i, checkbutton in enumerate(guild_permissions):
+            if items_in_column_counter == 8:
+                items_in_column_counter = 0
+                current_row += 1
+            checkbutton.grid(column=items_in_column_counter, row=current_row, padx=3, pady=3, sticky="w")
+            items_in_column_counter += 1
+
+        self.permission_checkboxes: list[list[ttk.Checkbutton]] = [guild_permissions]
+
+        # Add all content for text permissions tab
+        text_permissions_text: list = [
+            "Moderate Private Threads", "Moderate Public Threads", "Moderate Messages", "Moderate Embeds", "Moderate Attachments",
+            "Moderate Pins", "Moderate Reactions", "Not Used", "Not Used", "Not Used",
+            "Not Used", "Not Used", "Not Used", "Not Used", "Embed Links",
+            "Attach Files", "Add Reactions", "Delete Private Threads", "Create Private Threads", "Send TTS Messages",
+            "Delete Public Threads", "Create Public Threads", "Use External Animated Stickers", "Use External Stickers", "Use Animated External Emojis",
+            "Use External Emojis", "Use Animated Stickers", "Use Stickers", "Use Animated Emojis", "Use Emojis",
+            "Delete Messages", "Send Messages"
+        ]
+
+        text_permissions: list[ttk.Checkbutton] = []
+
+        for i, permission in enumerate(text_permissions_text):
+            text_permissions.append(ttk.Checkbutton(self.tabs[1], text=permission, variable=self.permission_values[1][i]))
+
+        items_in_column_counter: int = 0
+        current_row: int = 1
+        for i, checkbutton in enumerate(text_permissions):
+            if items_in_column_counter == 8:
+                items_in_column_counter = 0
+                current_row += 1
+            checkbutton.grid(column=items_in_column_counter, row=current_row, padx=3, pady=3, sticky="w")
+            items_in_column_counter += 1
+
+        self.permission_checkboxes.append(text_permissions)
+
+        # Add all content for voice permissions tab
+        voice_permissions_text: list = ["Server Deafen Members", "Server Mute Members", "Move Members"]
+        voice_permissions_text += ["Not Used" for i in range(23)]
+        voice_permissions_text += ["View Screen Streams", "Stream Camera", "View Cameras", "Use Voice Activity", "Speak", "Listen"]
+
+        print(len(voice_permissions_text))
+
+        voice_permissions: list[ttk.Checkbutton] = []
+
+        for i, permission in enumerate(voice_permissions_text):
+            voice_permissions.append(ttk.Checkbutton(self.tabs[2], text=permission, variable=self.permission_values[2][i]))
+
+        items_in_column_counter: int = 0
+        current_row: int = 1
+        for i, checkbutton in enumerate(voice_permissions):
+            if items_in_column_counter == 8:
+                items_in_column_counter = 0
+                current_row += 1
+            checkbutton.grid(column=items_in_column_counter, row=current_row, padx=3, pady=3, sticky="w")
+            items_in_column_counter += 1
+
+        self.permission_checkboxes.append(voice_permissions)
+
+        # Draw inputs for all tabs
+        for i, entry in enumerate(self.interface_boxes):
+            entry.grid(column=0, row=5, padx=10, pady=10)
+
+        # Add select and deselect all buttons for guild permissions
+        select_all_guild_permissions_button: ttk.Button = ttk.Button(self.tabs[0], text="Select All", command=self._select_all_guild_permissions)
+        select_all_guild_permissions_button.grid(column=0, row=6, padx=10, pady=10)
+
+        deselect_all_guild_permissions_button: ttk.Button = ttk.Button(self.tabs[0], text="Deselect All", command=self._deselect_all_guild_permissions)
+        deselect_all_guild_permissions_button.grid(column=1, row=6, padx=10, pady=10)
+
+    def _recalculate_guild_permissions(self):
+        """
+        Recalculates the guild permissions.
+        """
+        permissions: list[bool] = [var.get() for var in self.permission_values[0]]
+        self.interface_values[0].set(convert_boolean_list(permissions))
+
+    def _select_all_guild_permissions(self):
+        """
+        Selects all guild permissions.
+        """
+        for var in self.permission_values[0]:
+            var.set(True)
+
+        self._recalculate_guild_permissions()
+
+    def _deselect_all_guild_permissions(self):
+        """
+        Deselects all guild permissions.
+        """
+        for var in self.permission_values[0]:
+            var.set(False)
+
+        self._recalculate_guild_permissions()
+
+
 if __name__ == "__main__":
     """
     Run tool as a standalone.
     """
-    # Create Tkinter root window
-    root: Tk = Tk()
-    root.title = "Disbroad Permissions Tool"
-
-    # Create Tab Control and add tabs
-    tab_control: Notebook = ttk.Notebook(root)
-    guild_permissions_tab: Frame = ttk.Frame(tab_control)
-    text_permissions_tab: Frame = ttk.Frame(tab_control)
-    voice_permissions_tab: Frame = ttk.Frame(tab_control)
-
-    tab_control.add(guild_permissions_tab, text="Guild Permissions")
-    tab_control.add(text_permissions_tab, text="Text Permissions")
-    tab_control.add(voice_permissions_tab, text="Voice Permissions")
-
-    tab_control.pack(expand=1, fill="both")
-
-    # Add titles for content in tabs
-    guild_permissions_tab_label: ttk.Label = ttk.Label(guild_permissions_tab, text="Guild Permissions")
-    guild_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
-
-    text_permissions_tab_label: ttk.Label = ttk.Label(text_permissions_tab, text="Text Permissions")
-    text_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
-
-    voice_permissions_tab_label: ttk.Label = ttk.Label(voice_permissions_tab, text="Voice Permissions")
-    voice_permissions_tab_label.grid(column=0, row=0, padx=10, pady=10)
-
-    # Add all checkboxes for guild permissions
-    permissions_text: list = [
-        "Administrator", "View Audit Logs", "View Insights", "Manage Guild", "Delete Roles",
-        "Create Roles", "Manage Roles", "Remove Roles", "Assign Roles", "Delete Channels",
-        "Create Channels", "Manage Channels", "Unban Members", "Ban Members", "Kick Members",
-        "Manage Members", "Manage Invites", "Delete Emojis", "Create Emojis", "Manage Emojis",
-        "Delete Stickers", "Create Stickers", "Manage Stickers", "Delete Webhooks", "Create Webhooks",
-        "Manage Webhooks", "Delete Events", "Create Events", "Manage Events", "Send Invites",
-        "Not Used", "Not Used"
-    ]
-    guild_permissions: list[tuple[Variable, ttk.Checkbutton]] = [(Variable(guild_permissions_tab), ttk.Checkbutton(guild_permissions_tab, text=permission, variable=Variable(guild_permissions_tab))) for permission in permissions_text[:32]]
-
-    items_in_column_counter: int = 0
-    current_row: int = 1
-    for i, (variable, checkbutton) in enumerate(guild_permissions):
-        if items_in_column_counter == 8:
-            items_in_column_counter = 0
-            current_row += 1
-        checkbutton.grid(column=items_in_column_counter, row=current_row, padx=3, pady=3)
-        items_in_column_counter += 1
-
-    # Run tkinter main loop
-    root.mainloop()
+    window: PermissionsCalculatorWindow = PermissionsCalculatorWindow()
+    window.root.mainloop()
