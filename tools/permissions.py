@@ -6,20 +6,7 @@ from tkinter import Tk, Variable, ttk, BooleanVar
 from tkinter.ttk import Frame, Notebook
 
 
-def convert_bit_string(permissions: str) -> int:
-    """
-    Converts a bit string to an integer.
-
-    Args:
-        permissions (str): Bit string of permissions.
-
-    Returns:
-        int: Integer representation of permissions.
-    """
-    return int(permissions, 2)
-
-
-def convert_boolean_list(permissions: list[bool]) -> int:
+def code_from_list(permissions: list[bool]) -> int:
     """
     Converts a list of boolean permissions to an integer.
 
@@ -78,9 +65,9 @@ class PermissionsCalculatorWindow:
 
         # Prefill the boolean variables
         self.permission_values: list[list[BooleanVar]] = [
-            [BooleanVar(self.tabs[0], False) for i in range(32)],
-            [BooleanVar(self.tabs[1], False) for i in range(32)],
-            [BooleanVar(self.tabs[2], False) for i in range(32)]
+            [BooleanVar(self.tabs[0], False) for _ in range(32)],
+            [BooleanVar(self.tabs[1], False) for _ in range(32)],
+            [BooleanVar(self.tabs[2], False) for _ in range(32)]
         ]
 
         self.interface_values: list[Variable] = [
@@ -152,7 +139,7 @@ class PermissionsCalculatorWindow:
 
         # Add all content for voice permissions tab
         voice_permissions_text: list = ["Server Deafen Members", "Server Mute Members", "Move Members"]
-        voice_permissions_text += ["Not Used" for i in range(23)]
+        voice_permissions_text += ["Not Used" for _ in range(23)]
         voice_permissions_text += ["View Screen Streams", "Stream Camera", "View Cameras", "Use Voice Activity", "Speak", "Listen"]
 
         voice_permissions: list[ttk.Checkbutton] = []
@@ -187,7 +174,7 @@ class PermissionsCalculatorWindow:
         Recalculates the guild permissions.
         """
         permissions: list[bool] = [var.get() for var in self.permission_values[0]]
-        self.interface_values[0].set(convert_boolean_list(permissions))
+        self.interface_values[0].set(code_from_list(permissions))
 
     def _select_all_guild_permissions(self) -> None:
         """
@@ -212,7 +199,7 @@ class PermissionsCalculatorWindow:
         Recalculates the text permissions.
         """
         permissions: list[bool] = [var.get() for var in self.permission_values[1]]
-        self.interface_values[1].set(convert_boolean_list(permissions))
+        self.interface_values[1].set(code_from_list(permissions))
 
     def _select_all_text_permissions(self) -> None:
         """
@@ -237,7 +224,7 @@ class PermissionsCalculatorWindow:
         Recalculates the voice permissions.
         """
         permissions: list[bool] = [var.get() for var in self.permission_values[2]]
-        self.interface_values[2].set(convert_boolean_list(permissions))
+        self.interface_values[2].set(code_from_list(permissions))
 
     def _select_all_voice_permissions(self) -> None:
         """
