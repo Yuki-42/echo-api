@@ -44,7 +44,7 @@ class PermissionsCalculatorWindow:
     interface_values: list[Variable]
     interface_boxes: list[ttk.Entry]
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the Permissions Calculator Window.
         """
@@ -137,7 +137,7 @@ class PermissionsCalculatorWindow:
         text_permissions: list[ttk.Checkbutton] = []
 
         for i, permission in enumerate(text_permissions_text):
-            text_permissions.append(ttk.Checkbutton(self.tabs[1], text=permission, variable=self.permission_values[1][i]))
+            text_permissions.append(ttk.Checkbutton(self.tabs[1], text=permission, variable=self.permission_values[1][i], command=self._recalculate_text_permissions))
 
         items_in_column_counter: int = 0
         current_row: int = 1
@@ -155,12 +155,10 @@ class PermissionsCalculatorWindow:
         voice_permissions_text += ["Not Used" for i in range(23)]
         voice_permissions_text += ["View Screen Streams", "Stream Camera", "View Cameras", "Use Voice Activity", "Speak", "Listen"]
 
-        print(len(voice_permissions_text))
-
         voice_permissions: list[ttk.Checkbutton] = []
 
         for i, permission in enumerate(voice_permissions_text):
-            voice_permissions.append(ttk.Checkbutton(self.tabs[2], text=permission, variable=self.permission_values[2][i]))
+            voice_permissions.append(ttk.Checkbutton(self.tabs[2], text=permission, variable=self.permission_values[2][i], command=self._recalculate_voice_permissions))
 
         items_in_column_counter: int = 0
         current_row: int = 1
@@ -184,14 +182,14 @@ class PermissionsCalculatorWindow:
         deselect_all_guild_permissions_button: ttk.Button = ttk.Button(self.tabs[0], text="Deselect All", command=self._deselect_all_guild_permissions)
         deselect_all_guild_permissions_button.grid(column=1, row=6, padx=10, pady=10)
 
-    def _recalculate_guild_permissions(self):
+    def _recalculate_guild_permissions(self) -> None:
         """
         Recalculates the guild permissions.
         """
         permissions: list[bool] = [var.get() for var in self.permission_values[0]]
         self.interface_values[0].set(convert_boolean_list(permissions))
 
-    def _select_all_guild_permissions(self):
+    def _select_all_guild_permissions(self) -> None:
         """
         Selects all guild permissions.
         """
@@ -200,7 +198,7 @@ class PermissionsCalculatorWindow:
 
         self._recalculate_guild_permissions()
 
-    def _deselect_all_guild_permissions(self):
+    def _deselect_all_guild_permissions(self) -> None:
         """
         Deselects all guild permissions.
         """
@@ -208,6 +206,56 @@ class PermissionsCalculatorWindow:
             var.set(False)
 
         self._recalculate_guild_permissions()
+
+    def _recalculate_text_permissions(self) -> None:
+        """
+        Recalculates the text permissions.
+        """
+        permissions: list[bool] = [var.get() for var in self.permission_values[1]]
+        self.interface_values[1].set(convert_boolean_list(permissions))
+
+    def _select_all_text_permissions(self) -> None:
+        """
+        Selects all text permissions.
+        """
+        for var in self.permission_values[1]:
+            var.set(True)
+
+        self._recalculate_text_permissions()
+
+    def _deselect_all_text_permissions(self) -> None:
+        """
+        Deselects all text permissions.
+        """
+        for var in self.permission_values[1]:
+            var.set(False)
+
+        self._recalculate_text_permissions()
+
+    def _recalculate_voice_permissions(self) -> None:
+        """
+        Recalculates the voice permissions.
+        """
+        permissions: list[bool] = [var.get() for var in self.permission_values[2]]
+        self.interface_values[2].set(convert_boolean_list(permissions))
+
+    def _select_all_voice_permissions(self) -> None:
+        """
+        Selects all voice permissions.
+        """
+        for var in self.permission_values[2]:
+            var.set(True)
+
+        self._recalculate_voice_permissions()
+
+    def _deselect_all_voice_permissions(self) -> None:
+        """
+        Deselects all voice permissions.
+        """
+        for var in self.permission_values[2]:
+            var.set(False)
+
+        self._recalculate_voice_permissions()
 
 
 if __name__ == "__main__":
