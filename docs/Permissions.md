@@ -30,27 +30,76 @@ There are three different permission types, each with their own set of bitmasks:
 | Delete Channels | 22         | 00000000010000000000000000000000 | Allows the user to delete channels                                                          |
 | Create Channels | 21         | 00000000001000000000000000000000 | Allows the user to create channels                                                          |
 | Manage Channels | 20         | 00000000000100000000000000000000 | Allows the user to manage channel settings such as names                                    |
-| Ban Members     | 19         | 00000000000010000000000000000000 | Allows the user to ban members                                                              |
-| Kick Members    | 18         | 00000000000001000000000000000000 | Allows the user to kick members                                                             |
-| Manage Members  | 17         | 00000000000000100000000000000000 | Allows the user to manage member settings such as nicknames or reset guild profile pictures |
-| Manage Invites  | 16         | 00000000000000010000000000000000 | Allows the user to manage active guild invites                                              |
-| Delete Emojis   | 15         | 00000000000000001000000000000000 | Allows the user to delete emojis                                                            |
-| Create Emojis   | 14         | 00000000000000000100000000000000 | Allows the user to create emojis                                                            |
-| Manage Emojis   | 13         | 00000000000000000010000000000000 | Allows the user to manage emoji names (not images)                                          |
-| Delete Stickers | 12         | 00000000000000000001000000000000 | Allows the user to delete stickers                                                          |
-| Create Stickers | 11         | 00000000000000000000100000000000 | Allows the user to create stickers                                                          |
-| Manage Stickers | 10         | 00000000000000000000010000000000 | Allows the user to manage sticker names (not images)                                        |
-| Delete Webhooks | 9          | 00000000000000000000001000000000 | Allows the user to delete webhooks                                                          |
-| Create Webhooks | 8          | 00000000000000000000000100000000 | Allows the user to create webhooks                                                          |
-| Manage Webhooks | 7          | 00000000000000000000000010000000 | Allows the user to manage webhook settings                                                  |
-| Delete Events   | 6          | 00000000000000000000000001000000 | Allows the user to delete events                                                            |
-| Create Events   | 5          | 00000000000000000000000000100000 | Allows the user to create events                                                            |
-| Manage Events   | 4          | 00000000000000000000000000010000 | Allows the user to manage event settings                                                    |
-| Send Invites    | 3          | 00000000000000000000000000001000 | Allows the user to send invites                                                             |
-| Not Used        | 2          | 00000000000000000000000000000100 | Not used                                                                                    |
+| Unban Members   | 19         | 00000000000010000000000000000000 | Allows the user to unban members                                                            |
+| Ban Members     | 18         | 00000000000001000000000000000000 | Allows the user to ban members                                                              |
+| Kick Members    | 17         | 00000000000000100000000000000000 | Allows the user to kick members                                                             |
+| Manage Members  | 16         | 00000000000000010000000000000000 | Allows the user to manage member settings such as nicknames or reset guild profile pictures |
+| Manage Invites  | 15         | 00000000000000001000000000000000 | Allows the user to manage active guild invites                                              |
+| Delete Emojis   | 14         | 00000000000000000100000000000000 | Allows the user to delete emojis                                                            |
+| Create Emojis   | 13         | 00000000000000000010000000000000 | Allows the user to create emojis                                                            |
+| Manage Emojis   | 12         | 00000000000000000001000000000000 | Allows the user to manage emoji names (not images)                                          |
+| Delete Stickers | 11         | 00000000000000000000100000000000 | Allows the user to delete stickers                                                          |
+| Create Stickers | 10         | 00000000000000000000010000000000 | Allows the user to create stickers                                                          |
+| Manage Stickers | 9          | 00000000000000000000001000000000 | Allows the user to manage sticker names (not images)                                        |
+| Delete Webhooks | 8          | 00000000000000000000000100000000 | Allows the user to delete webhooks                                                          |
+| Create Webhooks | 7          | 00000000000000000000000010000000 | Allows the user to create webhooks                                                          |
+| Manage Webhooks | 6          | 00000000000000000000000001000000 | Allows the user to manage webhook settings                                                  |
+| Delete Events   | 5          | 00000000000000000000000000100000 | Allows the user to delete events                                                            |
+| Create Events   | 4          | 00000000000000000000000000010000 | Allows the user to create events                                                            |
+| Manage Events   | 3          | 00000000000000000000000000001000 | Allows the user to manage event settings                                                    |
+| Send Invites    | 2          | 00000000000000000000000000000100 | Allows the user to send invites                                                             |
 | Not Used        | 1          | 00000000000000000000000000000010 | Not used                                                                                    |
 | Not Used        | 0          | 00000000000000000000000000000001 | Not used                                                                                    |
 
 ### Text Channel Permissions 
 
+| Permission                     | Bit Number | Bit Position                     | Description                                                      |
+|--------------------------------|------------|----------------------------------|------------------------------------------------------------------|
+| Moderate Private Threads       | 31         | 10000000000000000000000000000000 | Allows the user to moderate private threads in the channel       |
+| Moderate Public Threads        | 30         | 01000000000000000000000000000000 | Allows the user to moderate public threads in the channel        |
+| Moderate Messages              | 29         | 00100000000000000000000000000000 | Allows the user to moderate messages in the channel              |
+| Moderate Embeds                | 28         | 00010000000000000000000000000000 | Allows the user to moderate embeds in the channel                |
+| Moderate Attachments           | 27         | 00001000000000000000000000000000 | Allows the user to moderate attachments in the channel           |
+| Moderate Pins                  | 26         | 00000100000000000000000000000000 | Allows the user to moderate pins in the channel                  |
+| Moderate Reactions             | 25         | 00000010000000000000000000000000 | Allows the user to moderate reactions in the channel             |
+| Not Used                       | 24         | 00000001000000000000000000000000 | Not used                                                         |
+| Not Used                       | 23         | 00000000100000000000000000000000 | Not used                                                         |
+| Not Used                       | 22         | 00000000010000000000000000000000 | Not used                                                         |
+| Not Used                       | 21         | 00000000001000000000000000000000 | Not used                                                         |
+| Not Used                       | 20         | 00000000000100000000000000000000 | Not used                                                         |
+| Not Used                       | 19         | 00000000000010000000000000000000 | Not used                                                         |
+| Not Used                       | 18         | 00000000000001000000000000000000 | Not used                                                         |
+| Embed Links                    | 17         | 00000000000000100000000000000000 | Allows the user to embed links in the channel                    |
+| Attach Files                   | 16         | 00000000000000010000000000000000 | Allows the user to attach files in the channel                   |
+| Add Reactions                  | 15         | 00000000000000001000000000000000 | Allows the user to add reactions in the channel                  |
+| Delete Private Threads         | 14         | 00000000000000000100000000000000 | Allows the user to delete private threads they created           |
+| Create Private Threads         | 13         | 00000000000000000010000000000000 | Allows the user to create private threads in the channel         |
+| Send TTS Messages              | 12         | 00000000000000000001000000000000 | Allows the user to send TTS messages in the channel              |
+| Delete Public Threads          | 11         | 00000000000000000000100000000000 | Allows the user to delete public threads they created            |
+| Create Public Threads          | 10         | 00000000000000000000010000000000 | Allows the user to create public threads in the channel          |
+| Use External Animated Stickers | 9          | 00000000000000000000001000000000 | Allows the user to use external animated stickers in the channel |
+| Use External Stickers          | 8          | 00000000000000000000000100000000 | Allows the user to use external stickers in the channel          |
+| Use Animated External Emojis   | 7          | 00000000000000000000000010000000 | Allows the user to use animated external emojis in the channel   |
+| Use External Emojis            | 6          | 00000000000000000000000001000000 | Allows the user to use external emojis in the channel            |
+| Use Animated Stickers          | 5          | 00000000000000000000000000100000 | Allows the user to use animated stickers in the channel          |
+| Use Stickers                   | 4          | 00000000000000000000000000010000 | Allows the user to use stickers in the channel                   |
+| Use Animated Emojis            | 3          | 00000000000000000000000000001000 | Allows the user to use animated emojis in the channel            |
+| Use Emojis                     | 2          | 00000000000000000000000000000100 | Allows the user to use emojis in the channel                     |
+| Delete Messages                | 1          | 00000000000000000000000000000010 | Allows the user to delete their own messages in the channel      |
+| Send Messages                  | 0          | 00000000000000000000000000000001 | Allows the user to send messages in the channel                  |
+
 ### Voice Channel Permissions
+
+| Permission            | Bit Number | Bit Position                     | Description                                             |
+|-----------------------|------------|----------------------------------|---------------------------------------------------------|
+| Server Deafen Members | 31         | 10000000000000000000000000000000 | Allows the user to server deafen members in the channel |
+| Server Mute Members   | 30         | 01000000000000000000000000000000 | Allows the user to server mute members in the channel   |
+| Move Members          | 29         | 00100000000000000000000000000000 | Allows the user to move members in the channel          |
+| Not Used              | 28-7       | 00011111111111111111111100000000 | Not used                                                |
+| Stream Screens        | 7          | 00000000000000000000000010000000 | Allows the user to stream their screen in the channel   |
+| View Screen Streams   | 6          | 00000000000000000000000001000000 | Allows the user to view screen streams in the channel   |
+| Stream Camera         | 6          | 00000000000000000000000001000000 | Allows the user to stream their camera in the channel   |
+| View Cameras          | 3          | 00000000000000000000000000001000 | Allows the user to view cameras in the channel          |
+| Use Voice Activity    | 2          | 00000000000000000000000000000100 | Allows the user to use voice activity in the channel    |
+| Speak                 | 1          | 00000000000000000000000000000010 | Allows the user to speak in the channel                 |
+| Listen                | 0          | 00000000000000000000000000000001 | Allows the user to listen in the channel                | 
