@@ -50,6 +50,4 @@ class User(BaseModel):
     is_online: bool
     is_banned: bool
     is_verified: bool
-
-    # Secured data
-
+    verification_code: Optional[str]

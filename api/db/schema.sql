@@ -23,6 +23,7 @@ CREATE TABLE public.users
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     email       TEXT      NOT NULL UNIQUE,
     username    TEXT      NOT NULL,
+    tag         INT       NOT NULL DEFAULT 0,
     icon        uuid,
     bio         TEXT,
     status      jsonb     NOT NULL DEFAULT '{}', /* Json Object. See docs/database.md#status */ /* TODO: Actually do this small documentation */
@@ -96,7 +97,8 @@ CREATE TABLE public.guild_members
     user_id         uuid NOT NULL,
     guild_id        uuid NOT NULL,
     nickname        TEXT,
-    profile_picture uuid NOT NULL /* Set the default profile picture to be the user's profile picture */
+    profile_picture uuid,
+    bio             TEXT
 );
 
 CREATE TABLE public.channel_members
@@ -134,10 +136,11 @@ CREATE TABLE secured.devices
 
 CREATE TABLE secured.tokens
 (
-    user_id   uuid PRIMARY KEY NOT NULL,
-    device_id uuid             NOT NULL,
-    token     TEXT             NOT NULL,
-    last_used TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id        uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    user_id   uuid      NOT NULL,
+    device_id uuid      NOT NULL,
+    token     TEXT      NOT NULL,
+    last_used TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE secured.passwords
@@ -173,6 +176,7 @@ CREATE OR REPLACE FUNCTION hash_bigint(text) RETURNS bigint AS
 $$
 SELECT ('x' || SUBSTR(MD5($1), 1, 16))::BIT(64)::BIGINT;
 $$ LANGUAGE sql;
+
 
 /* Create triggers */
 CREATE TRIGGER set_default_profile_picture

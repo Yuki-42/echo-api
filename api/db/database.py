@@ -1,12 +1,17 @@
 """
 Contains database connection information and shared handlers.
 """
+
 # Standard Library Imports
+from typing import Type
 
 # Third Party Imports
+from psycopg2 import connect
+from psycopg2.extras import DictConnection
 
 # Local Imports
 from ..internals.config import Config
+from .handlers.base_handler import BaseHandler
 from .handlers import *
 
 # Constants
@@ -15,8 +20,55 @@ __all__ = ["database"]
 
 class Database:
     """
-    Database connection pool.
+    Database connection group.
     """
-    def __init__(self, config: Config) -> None:
+    config: Config
+
+    # List of running handlers
+    handlers: list[Type[any]]  # TODO: Get correct typing for this
+
+    # Handlers
+    users: Users
+
+    def __init__(
+            self,
+            config: Config
+    ) -> None:
         self.config = config
-        self.pool = None
+
+        # Connect handlers
+        self.users = Users(self._new_connection())
+
+        # Add handlers to list
+        self.handlers = [
+            self.users
+        ]
+
+    def _new_connection(self) -> DictConnection:
+        """
+        Create a new database connection.
+
+        Returns:
+            DictConnection: Database connection.
+        """
+        return connect(
+            dbname=self.config.db.name,
+            user=self.config.db.user,
+            password=self.config.db.password,
+            host=self.config.db.host,
+            port=self.config.db.port,
+            connection_factory=DictConnection
+        )
+
+    async def close(self) -> None:
+        """
+        Close all handlers.
+        """
+        for handler in self.handlers:
+            handler.close()
+
+    def __del__(self) -> None:
+        """
+        Close all handlers.
+        """
+        self.close()
