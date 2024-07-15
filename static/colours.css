@@ -1,0 +1,27 @@
+:root {
+    --linearPrimarySecondary: linear-gradient(#00ffd5, #00273d);
+    --linearPrimaryAccent: linear-gradient(#00ffd5, #a62ab7);
+    --linearSecondaryAccent: linear-gradient(#00273d, #a62ab7);
+    --radialPrimarySecondary: radial-gradient(#00ffd5, #00273d);
+    --radialPrimaryAccent: radial-gradient(#00ffd5, #a62ab7);
+    --radialSecondaryAccent: radial-gradient(#00273d, #a62ab7);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --text: #01050e;
+        --background: #f1f6fe;
+        --primary: #00ffd5;
+        --secondary: #c2e9ff;
+        --accent: #c548d5;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #f1f5fe;
+        --background: #01060e;
+        --primary: #00ffd5;
+        --secondary: #00273d;
+        --accent: #a62ab7;
+    }
+}

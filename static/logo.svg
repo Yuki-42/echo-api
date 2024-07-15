@@ -1,14 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 931.25 920.34">
-  <defs>
-    <style>
-      .cls-1 {
-        fill: #3ef61e;
-        stroke-width: 0px;
-      }
-    </style>
-  </defs>
-  <rect class="cls-1" x="-86.99" y="374.63" width="1108.83" height="166.48" rx="83.24" ry="83.24" transform="translate(381.49 -190.78) rotate(38.05)"/>
-  <rect class="cls-1" x="-60.84" y="577.37" width="739.22" height="166.48" rx="83.24" ry="83.24" transform="translate(472.73 -49.92) rotate(38.05)"/>
-  <rect class="cls-1" x="252.87" y="176.49" width="739.22" height="166.48" rx="83.24" ry="83.24" transform="translate(292.33 -328.44) rotate(38.05)"/>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 852.64 663.29"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-1,.cls-2,.cls-3,.cls-4{stroke-width:0px;}.cls-2{fill:url(#New_Gradient_Swatch-2);}.cls-3{fill:url(#New_Gradient_Swatch);}.cls-4{fill:url(#New_Gradient_Swatch-3);}</style><linearGradient id="New_Gradient_Swatch" x1="124.51" y1="406.95" x2="820.02" y2="138.41" gradientTransform="translate(-45.33 49.41) rotate(-8.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00ffd5"/><stop offset="1" stop-color="#a62ab7"/></linearGradient><linearGradient id="New_Gradient_Swatch-2" x1="151.7" y1="477.37" x2="847.2" y2="208.83" gradientTransform="translate(-42.72 80.75) rotate(-8.39)" xlink:href="#New_Gradient_Swatch"/><linearGradient id="New_Gradient_Swatch-3" x1="180.57" y1="552.14" x2="876.07" y2="283.6" gradientTransform="translate(-40.42 113.05) rotate(-8.39)" xlink:href="#New_Gradient_Swatch"/><linearGradient id="linear-gradient" x1="96.22" y1="333.69" x2="791.73" y2="65.15" gradientTransform="translate(-47.26 18.44) rotate(-8.39)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00ffd5"/><stop offset="1" stop-color="#a62ab7"/></linearGradient></defs><rect class="cls-3" x="226.52" y="60.7" width="175.28" height="546.07" rx="81.46" ry="81.46" transform="translate(52.05 -42.26) rotate(8.39)"/><rect class="cls-2" x="441.48" y="-1.78" width="175.28" height="666.85" rx="81.46" ry="81.46" transform="translate(54.05 -73.65) rotate(8.39)"/><rect class="cls-4" x="662.89" y="151.03" width="175.28" height="362.08" rx="81.46" ry="81.46" transform="translate(56.48 -105.95) rotate(8.39)"/><rect class="cls-1" x="14.47" y="150.38" width="175.28" height="362.08" rx="81.46" ry="81.46" transform="translate(49.45 -11.35) rotate(8.39)"/></svg>
