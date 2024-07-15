@@ -1,1 +1,1 @@
-fastapi run api.py
+fastapi run api.py --root-path /api/v1

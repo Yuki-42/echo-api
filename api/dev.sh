@@ -1,1 +1,1 @@
-fastapi dev api.py
+fastapi dev api.py --root-path /api/v1

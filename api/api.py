@@ -9,9 +9,13 @@ from fastapi import FastAPI
 # Local Imports
 from routes import *
 
-# Create FastAPI instance
-app: FastAPI = FastAPI()
 
-# Register routes
-app.include_router(api_router)
+def create_app() -> FastAPI:
+    """
+    Create FastAPI instance.
+    """
+    # Create FastAPI instance
+    app: FastAPI = FastAPI()
 
+    # Register routes
+    app.include_router(api_router)

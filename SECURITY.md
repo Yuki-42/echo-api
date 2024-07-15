@@ -5,7 +5,7 @@
 This project is currently in rapid-development, meaning a consistent version system has not been established due to the project not being complete.
 
 | Version   | Supported          |
-| --------- | ------------------ |
+|-----------|--------------------|
 | pre-alpha | :white_check_mark: |
 
 ## Reporting a Vulnerability
