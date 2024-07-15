@@ -152,10 +152,16 @@ CREATE TABLE secured.passwords
 
 CREATE TABLE secured.two_factor
 (
-    user_id      uuid PRIMARY KEY REFERENCES public.users (id),
+    user_id      uuid PRIMARY KEY,
     secret       TEXT          NOT NULL,
     backup_codes VARCHAR(8)[8] NOT NULL,
     last_updated TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE secured.verification_codes
+(
+    user_id uuid PRIMARY KEY,
+    code VARCHAR(256) NOT NULL
 );
 
 /* Create checks */
@@ -262,6 +268,9 @@ ALTER TABLE secured.passwords
 
 ALTER TABLE secured.two_factor
     ADD CONSTRAINT two_factor_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+
+ALTER TABLE secured.verification_codes
+    ADD CONSTRAINT verification_codes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
 
 /* Apply permissions */
 REVOKE ALL ON ALL TABLES IN SCHEMA secured FROM PUBLIC;
