@@ -21,6 +21,18 @@ the `/auth` endpoint to obtain a token.
 
 ### /users
 
+#### GET 
+
+Gets info about a user. The response will only get public information about a user unless you are the user itself. The
+response will be a JSON object with the following fields:
+- `id`: The id of the user.
+- `created_at`: The date and time the user was created.
+- `email`: The email address of the user. Only the user themselves can see this.
+- `usernname`: The username of the user.
+- `icon`: The file_id of the icon of the user.
+- `bio`: The bio of the user.
+- `status`: The status of the user.
+
 #### POST
 
 Note that this is the only endpoint that does not require authentication.
@@ -28,7 +40,7 @@ Note that this is the only endpoint that does not require authentication.
 Create a new user. The body of the request must contain a JSON object with the following fields:
 - `email`: The email address of the user. This will be used to log in.
 - `password`: The password of the user. This will be used to log in.
-- `name`: The name of the user. This will be displayed to other users.
+- `username`: The username of the user. This will be displayed to other users.
 
 #### PUT
 
@@ -36,7 +48,7 @@ Edit the user. The body of the request must contain a JSON object with the field
 are available to edit:
 - `email`: The email address of the user. This will be used to log in.
 - `password`: The password of the user. This will be used to log in.
-- `name`: The name of the user. This will be displayed to other users.
+- `username`: The username of the user. This will be displayed to other users.
 - `icon`: The file_id of the icon of the user. This will be displayed to other users.
 - `bio`: The bio of the user. This will be displayed to other users.
 - `status`: The status of the user. This will be displayed to other users.
