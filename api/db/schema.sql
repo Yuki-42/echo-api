@@ -65,7 +65,7 @@ CREATE TABLE public.messages
     user_id    uuid      NOT NULL,
     channel_id uuid      NOT NULL,
     body       TEXT      NOT NULL,
-    embeds     jsonb[]   NOT NULL DEFAULT [] /* See https://www.postgresql.org/docs/current/datatype-json.html for justification for using jsonb instead of json */
+    embeds     jsonb     NOT NULL DEFAULT '{}' /* See https://www.postgresql.org/docs/current/datatype-json.html for justification for using jsonb instead of json */
 );
 
 CREATE TABLE public.message_attachments
@@ -116,7 +116,7 @@ CREATE TABLE public.invites
     uses        INT       NOT NULL DEFAULT 1,
     expires_at  TIMESTAMP,
     target_user uuid,
-    code        TEXT      NOT NULL DEFAULT id
+    code        TEXT
 );
 
 CREATE TABLE secured.devices
@@ -134,15 +134,15 @@ CREATE TABLE secured.devices
 
 CREATE TABLE secured.tokens
 (
-    user_id     uuid PRIMARY KEY REFERENCES public.users (id),
-    device_id   uuid PRIMARY KEY REFERENCES secured.devices (id),
-    token       TEXT NOT NULL,
-    last_used   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    user_id   uuid PRIMARY KEY NOT NULL,
+    device_id uuid             NOT NULL,
+    token     TEXT             NOT NULL,
+    last_used TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE secured.passwords
 (
-    user_id      uuid PRIMARY KEY REFERENCES public.users (id),
+    user_id      uuid PRIMARY KEY,
     password     VARCHAR(130) NOT NULL,
     last_updated TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
