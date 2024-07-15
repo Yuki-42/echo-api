@@ -60,12 +60,12 @@ CREATE TABLE public.channels
 
 CREATE TABLE public.messages
 (
-    id          uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_id     uuid      NOT NULL,
-    channel_id  uuid      NOT NULL,
-    body        TEXT      NOT NULL,
-    embeds      jsonb[]   NOT NULL DEFAULT [] /* See https://www.postgresql.org/docs/current/datatype-json.html for justification for using jsonb instead of json */
+    id         uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id    uuid      NOT NULL,
+    channel_id uuid      NOT NULL,
+    body       TEXT      NOT NULL,
+    embeds     jsonb[]   NOT NULL DEFAULT [] /* See https://www.postgresql.org/docs/current/datatype-json.html for justification for using jsonb instead of json */
 );
 
 CREATE TABLE public.message_attachments
@@ -119,6 +119,27 @@ CREATE TABLE public.invites
     code        TEXT      NOT NULL DEFAULT id
 );
 
+CREATE TABLE secured.devices
+(
+    id          uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name        TEXT      NOT NULL,
+    ip          TEXT      NOT NULL,
+    mac         TEXT      NOT NULL,
+    lang        TEXT      NOT NULL,
+    os          TEXT      NOT NULL,
+    screen_size TEXT      NOT NULL,
+    country     TEXT      NOT NULL
+);
+
+CREATE TABLE secured.tokens
+(
+    user_id     uuid PRIMARY KEY REFERENCES public.users (id),
+    device_id   uuid PRIMARY KEY REFERENCES secured.devices (id),
+    token       TEXT NOT NULL,
+    last_used   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE secured.passwords
 (
     user_id      uuid PRIMARY KEY REFERENCES public.users (id),
@@ -138,13 +159,7 @@ CREATE TABLE secured.two_factor
 ALTER TABLE public.channels
     ADD CONSTRAINT channel_type_check CHECK (type >= 0 AND type <= 2);
 
-
-/* Create triggers */
-CREATE TRIGGER set_default_profile_picture
-    BEFORE INSERT
-    ON public.guild_members
-EXECUTE FUNCTION set_default_profile_picture();
-
+/* Create functions */
 CREATE OR REPLACE FUNCTION set_default_profile_picture()
     RETURNS TRIGGER AS
 $$
@@ -154,6 +169,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION hash_bigint(text) RETURNS bigint AS
+$$
+SELECT ('x' || SUBSTR(MD5($1), 1, 16))::BIT(64)::BIGINT;
+$$ LANGUAGE sql;
+
+/* Create triggers */
+CREATE TRIGGER set_default_profile_picture
+    BEFORE INSERT
+    ON public.guild_members
+EXECUTE FUNCTION set_default_profile_picture();
 
 /* Create Rules */
 CREATE OR REPLACE RULE update_last_updated AS
@@ -222,6 +247,11 @@ ALTER TABLE public.invites
     ADD CONSTRAINT invites_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users (id);
 ALTER TABLE public.invites
     ADD CONSTRAINT invites_target_user_fkey FOREIGN KEY (target_user) REFERENCES public.users (id);
+
+ALTER TABLE secured.tokens
+    ADD CONSTRAINT tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+ALTER TABLE secured.tokens
+    ADD CONSTRAINT tokens_device_id_fkey FOREIGN KEY (device_id) REFERENCES secured.devices (id);
 
 ALTER TABLE secured.passwords
     ADD CONSTRAINT passwords_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
