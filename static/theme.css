@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Konkhmer%20Sleokchher:700|Inter:400');
+
 :root {
     --linearPrimarySecondary: linear-gradient(#00ffd5, #00273d);
     --linearPrimaryAccent: linear-gradient(#00ffd5, #a62ab7);
@@ -25,3 +27,28 @@
         --accent: #a62ab7;
     }
 }
+
+
+body {
+    font-family: 'Inter';
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Konkhmer Sleokchher';
+    font-weight: 700;
+}
+
+html {font-size: 100%;} /* 16px */
+
+h1 {font-size: 11.090rem; /* 177.44px */}
+
+h2 {font-size: 6.854rem; /* 109.6px */}
+
+h3 {font-size: 4.236rem; /* 67.84px */}
+
+h4 {font-size: 2.618rem; /* 41.92px */}
+
+h5 {font-size: 1.618rem; /* 25.92px */}
+
+small {font-size: 0.618rem; /* 9.92px */}
