@@ -37,5 +37,5 @@ class Config:
             self.name = "disbroad"
             self.user = "disbroad"
             self.password = "h4ycFyEahAvjcx4tbM!guZZUqvfR3Do6-Wpm4_PFC49tPXG@LtExQQ3nihixrH.*V!h6Q.Es8Rawr6sx3--MUZCLs7sF4hVumJpx"
-            self.host = "192.168.0.32"
+            self.host = "server"
             self.port = 5432

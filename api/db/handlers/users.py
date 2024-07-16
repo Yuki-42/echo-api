@@ -29,7 +29,7 @@ class Users(BaseHandler):
     ) -> None:
         super(Users, self).__init__(connection)
 
-    def get(
+    def id_get(
             self,
             user_id: str
     ) -> User:

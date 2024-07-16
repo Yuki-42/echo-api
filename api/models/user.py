@@ -50,4 +50,45 @@ class User(BaseModel):
     is_online: bool
     is_banned: bool
     is_verified: bool
-    verification_code: Optional[str]
+
+
+class File(BaseModel):
+    """
+    File model.
+    """
+    id: UUID
+    created_at: datetime
+    created_by: User
+
+
+class Device(BaseModel):
+    """
+    Device model.
+    """
+    id: UUID
+    created_at: datetime
+    name: str
+    ip: str
+    mac: str
+    lang: str
+    os: str
+    screen_size: str
+    country: str
+
+
+class Token(BaseModel):
+    """
+    Token model.
+    """
+    user: User
+    device: Device
+    token: str
+    last_used: datetime
+
+
+class PrivateUser(User):
+    """
+    Private user model.
+    """
+    tokens: list[Token]
+    password_last_updated: datetime

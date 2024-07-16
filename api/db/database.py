@@ -4,6 +4,7 @@ Contains database connection information and shared handlers.
 
 # Standard Library Imports
 from typing import Type
+from asyncio import run
 
 # Third Party Imports
 from psycopg2 import connect
@@ -71,4 +72,4 @@ class Database:
         """
         Close all handlers.
         """
-        self.close()
+        run(self.close())
