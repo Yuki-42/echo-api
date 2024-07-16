@@ -26,7 +26,7 @@ CREATE TABLE public.users
     tag         INT       NOT NULL DEFAULT 0,
     icon        uuid,
     bio         TEXT,
-    status      jsonb     NOT NULL DEFAULT '{}', /* Json Object. See docs/database.md#status */ /* TODO: Actually do this small documentation */
+    status      jsonb     NOT NULL, /* Json Object. See docs/database.md#status */ /* TODO: Actually do this small documentation */
     last_online TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_online   BOOLEAN   NOT NULL DEFAULT FALSE,
     is_banned   BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -115,7 +115,7 @@ CREATE TABLE public.invites
     guild_id    uuid      NOT NULL,
     channel_id  uuid      NOT NULL,
     created_by  uuid      NOT NULL,
-    uses        INT       NOT NULL DEFAULT 1,
+    uses        REAL       NOT NULL DEFAULT -1,
     expires_at  TIMESTAMP,
     target_user uuid,
     code        TEXT
