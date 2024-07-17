@@ -29,7 +29,11 @@ async def read_root() -> dict:
 @api_router.get("/docs", include_in_schema=False)
 async def docs(request: Request) -> HTMLResponse:
     return get_swagger_ui_html(
-        openapi_url=request.app.openapi_url,
+        openapi_url="/openapi.json",
         title="Disbroad API",
         swagger_css_url=SWAGGER_DARK_CSS
     )
+
+@api_router.get("/openapi.json", include_in_schema=False)
+async def openapi(request: Request) -> dict:
+    return request.app.openapi()
