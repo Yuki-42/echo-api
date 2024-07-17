@@ -96,6 +96,7 @@ CREATE TABLE public.guild_members
 (
     user_id         uuid NOT NULL,
     guild_id        uuid NOT NULL,
+    created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     nickname        TEXT,
     profile_picture uuid,
     bio             TEXT
