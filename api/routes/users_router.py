@@ -1,7 +1,9 @@
 # Standard Library Imports
+from typing import Annotated
 
 # Third Party Imports
-from fastapi import APIRouter
+from fastapi import APIRouter, Form, Body
+from pydantic import BaseModel
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 
@@ -18,6 +20,15 @@ users_router: APIRouter = APIRouter(
     prefix="/users",
     tags=["users"]
 )
+
+
+class CreateUserData(BaseModel):
+    """
+    Create user data model.
+    """
+    username: str
+    email: str
+    password: str
 
 
 @users_router.get("/<string: user_id>", tags=["users"])
@@ -42,9 +53,7 @@ async def read_users(
 
 @users_router.post("/", tags=["users"])
 async def create_user(
-        username: str,
-        email: str,
-        password: str,
+        data: CreateUserData,
         request: Request
 ) -> PrivateUserModel:
     """
@@ -53,5 +62,8 @@ async def create_user(
     # Get database connection
     db: Database = request.state.db
 
-    # Check if the user exists already
+    # Check if the user exists
+    user: User = db.users.get_by_email(data.email)
+
+
 

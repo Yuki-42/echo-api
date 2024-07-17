@@ -51,7 +51,7 @@ def create_app() -> FastAPI:
         await database.close()
 
     # Set token url
-    ouath2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
+    ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
     return api
