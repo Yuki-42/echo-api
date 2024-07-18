@@ -88,12 +88,11 @@ class User(BaseType):
             str: Email.
         """
         # Get email
-        cursor: DictCursor = self.id_get(
-            column=Identifier("email"),
-            id=str(self.id)
-        )
-
-        return cursor.fetchone()["email"]
+        with self.id_get(
+                column=Identifier("email"),
+                id=str(self.id)
+        ) as cursor:
+            return cursor.fetchone()["email"]
 
     @email.setter
     def email(self, value: str) -> None:
@@ -122,12 +121,11 @@ class User(BaseType):
             str: Username.
         """
         # Get username
-        cursor: DictCursor = self.id_get(
+        with self.id_get(
             column=Identifier("username"),
             id=self.id
-        )
-
-        return cursor.fetchone()["username"]
+        ) as cursor:
+            return cursor.fetchone()["username"]
 
     @username.setter
     def username(self, value: str) -> None:

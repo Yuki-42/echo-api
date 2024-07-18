@@ -86,19 +86,19 @@ class BaseType:
         Returns:
             cursor (DictCursor): Cursor.
         """
-        with self.connection.cursor() as cursor:
-            cursor.execute(
-                SQL(
-                    r"SELECT {column} FROM {table} WHERE {key} = %s;"
-                ).format(
-                    column=column,
-                    table=self._table_name,
-                    key=key
-                ),
-                (key_value,)
-            )
+        cursor: DictCursor = self.connection.cursor()
+        cursor.execute(
+            SQL(
+                r"SELECT {column} FROM {table} WHERE {key} = %s;"
+            ).format(
+                column=column,
+                table=self._table_name,
+                key=key
+            ),
+            (key_value,)
+        )
 
-            return cursor
+        return cursor
 
     def id_set(
             self,
