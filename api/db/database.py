@@ -52,14 +52,16 @@ class Database:
         Returns:
             DictConnection: Database connection.
         """
-        return connect(
+        connection: DictConnection = connect(
             dbname=self.config.db.name,
             user=self.config.db.user,
             password=self.config.db.password,
             host=self.config.db.host,
             port=self.config.db.port,
-            connection_factory=DictConnection
+            connection_factory=DictConnection,
         )
+        connection.autocommit = True
+        return connection
 
     async def close(self) -> None:
         """

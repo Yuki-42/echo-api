@@ -43,12 +43,12 @@ async def read_users(
     db: Database = request.state.db
 
     # Check if user exists
-    user: User = db.users.get(user_id)
+    user: User = db.users.id_get(user_id)
 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return user.to_model()
+    return user.to_public()
 
 
 @users_router.post("/", tags=["users"])
@@ -63,7 +63,15 @@ async def create_user(
     db: Database = request.state.db
 
     # Check if the user exists
-    user: User = db.users.get_by_email(data.email)
+    user: User = db.users.email_get(data.email)
+
+    if user is not None:
+        raise HTTPException(status_code=409, detail="User already exists")
+
+    # Create user
+    user = db.users.new(data.email, data.username, data.password)
+
+    return user.to_private()
 
 
 
