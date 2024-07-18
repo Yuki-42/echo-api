@@ -208,70 +208,70 @@ CREATE OR REPLACE RULE update_last_updated_two_factor AS
 
 /* Create relations */
 ALTER TABLE public.files
-    ADD CONSTRAINT files_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users (id);
+    ADD CONSTRAINT files_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users (id) ON DELETE CASCADE;
 
 ALTER TABLE public.guilds
     ADD CONSTRAINT guilds_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.users (id);
 ALTER TABLE public.guilds
-    ADD CONSTRAINT guilds_icon_fkey FOREIGN KEY (icon) REFERENCES public.files (id);
+    ADD CONSTRAINT guilds_icon_fkey FOREIGN KEY (icon) REFERENCES public.files (id) ON DELETE SET NULL;
 
 ALTER TABLE public.channels
-    ADD CONSTRAINT channels_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id);
+    ADD CONSTRAINT channels_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id) ON DELETE CASCADE;
 ALTER TABLE public.channels
-    ADD CONSTRAINT channels_parent_fkey FOREIGN KEY (parent) REFERENCES public.channels (id);
+    ADD CONSTRAINT channels_parent_fkey FOREIGN KEY (parent) REFERENCES public.channels (id) ON DELETE CASCADE;
 
 ALTER TABLE public.messages
-    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT messages_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE public.messages
-    ADD CONSTRAINT messages_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id);
+    ADD CONSTRAINT messages_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id) ON DELETE CASCADE;
 
 ALTER TABLE public.message_attachments
-    ADD CONSTRAINT message_attachments_message_id_fkey FOREIGN KEY (message_id) REFERENCES public.messages (id);
+    ADD CONSTRAINT message_attachments_message_id_fkey FOREIGN KEY (message_id) REFERENCES public.messages (id) ON DELETE CASCADE;
 ALTER TABLE public.message_attachments
-    ADD CONSTRAINT message_attachments_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.files (id);
+    ADD CONSTRAINT message_attachments_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.files (id) ON DELETE SET NULL;
 
 ALTER TABLE public.roles
-    ADD CONSTRAINT roles_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id);
+    ADD CONSTRAINT roles_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id) ON DELETE CASCADE;
 
 ALTER TABLE public.user_roles
-    ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE public.user_roles
-    ADD CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles (id);
+    ADD CONSTRAINT user_roles_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles (id) ON DELETE CASCADE;
 
 ALTER TABLE public.guild_members
-    ADD CONSTRAINT guild_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT guild_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE public.guild_members
-    ADD CONSTRAINT guild_members_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id);
+    ADD CONSTRAINT guild_members_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id) ON DELETE CASCADE;
 ALTER TABLE public.guild_members
-    ADD CONSTRAINT guild_members_profile_picture_fkey FOREIGN KEY (profile_picture) REFERENCES public.files (id);
+    ADD CONSTRAINT guild_members_profile_picture_fkey FOREIGN KEY (profile_picture) REFERENCES public.files (id) ON DELETE SET NULL;
 
 ALTER TABLE public.channel_members
-    ADD CONSTRAINT channel_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT channel_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE public.channel_members
-    ADD CONSTRAINT channel_members_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id);
+    ADD CONSTRAINT channel_members_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id) ON DELETE CASCADE;
 
 ALTER TABLE public.invites
-    ADD CONSTRAINT invites_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id);
+    ADD CONSTRAINT invites_guild_id_fkey FOREIGN KEY (guild_id) REFERENCES public.guilds (id) ON DELETE CASCADE;
 ALTER TABLE public.invites
-    ADD CONSTRAINT invites_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id);
+    ADD CONSTRAINT invites_channel_id_fkey FOREIGN KEY (channel_id) REFERENCES public.channels (id) ON DELETE CASCADE;
 ALTER TABLE public.invites
-    ADD CONSTRAINT invites_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users (id);
+    ADD CONSTRAINT invites_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE public.invites
-    ADD CONSTRAINT invites_target_user_fkey FOREIGN KEY (target_user) REFERENCES public.users (id);
+    ADD CONSTRAINT invites_target_user_fkey FOREIGN KEY (target_user) REFERENCES public.users (id) ON DELETE CASCADE;
 
 ALTER TABLE secured.tokens
-    ADD CONSTRAINT tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 ALTER TABLE secured.tokens
-    ADD CONSTRAINT tokens_device_id_fkey FOREIGN KEY (device_id) REFERENCES secured.devices (id);
+    ADD CONSTRAINT tokens_device_id_fkey FOREIGN KEY (device_id) REFERENCES secured.devices (id) ON DELETE CASCADE;
 
 ALTER TABLE secured.passwords
-    ADD CONSTRAINT passwords_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT passwords_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 
 ALTER TABLE secured.two_factor
-    ADD CONSTRAINT two_factor_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT two_factor_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 
 ALTER TABLE secured.verification_codes
-    ADD CONSTRAINT verification_codes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id);
+    ADD CONSTRAINT verification_codes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
 
 /* Apply permissions */
 REVOKE ALL ON ALL TABLES IN SCHEMA secured FROM PUBLIC;
