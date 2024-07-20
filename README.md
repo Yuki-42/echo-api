@@ -1,5 +1,5 @@
-# disbroad
-Crappy open source text, voice, and video chat. 
+# Echo API
+Web-based communications suite made for gamers by gamers.
 
 Static files are served using Nginx from `static` linked to `/var/www/disbroad`.
 

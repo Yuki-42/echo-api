@@ -1,6 +1,0 @@
-python-dotenv~=1.0.1
-flask~=3.0.3
-requests~=2.31.0
-Flask-Injector~=0.15.0
-gunicorn~=22.0.0
-dynaconf~=3.2.5

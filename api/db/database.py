@@ -4,6 +4,7 @@ Contains database connection information and shared handlers.
 
 # Standard Library Imports
 from typing import Type
+from asyncio import run
 
 # Third Party Imports
 from psycopg2 import connect
@@ -51,14 +52,16 @@ class Database:
         Returns:
             DictConnection: Database connection.
         """
-        return connect(
+        connection: DictConnection = connect(
             dbname=self.config.db.name,
             user=self.config.db.user,
             password=self.config.db.password,
             host=self.config.db.host,
             port=self.config.db.port,
-            connection_factory=DictConnection
+            connection_factory=DictConnection,
         )
+        connection.autocommit = True
+        return connection
 
     async def close(self) -> None:
         """
@@ -71,4 +74,4 @@ class Database:
         """
         Close all handlers.
         """
-        self.close()
+        run(self.close())

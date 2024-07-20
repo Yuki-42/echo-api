@@ -33,3 +33,7 @@ async def docs(request: Request) -> HTMLResponse:
         title="Disbroad API",
         swagger_css_url=SWAGGER_DARK_CSS
     )
+
+@api_router.get("/openapi.json", include_in_schema=False)
+async def openapi(request: Request) -> dict:
+    return request.app.openapi()
