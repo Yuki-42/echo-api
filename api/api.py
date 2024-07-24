@@ -5,8 +5,9 @@ Main file for API.
 from typing import Callable
 
 # Third Party Imports
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.requests import Request
+from fastapi.middleware import Middleware
 from fastapi.security import OAuth2PasswordBearer
 
 # Local Imports
@@ -15,7 +16,10 @@ from .internals.config import Config
 from .db.database import Database
 
 
-def create_app() -> FastAPI:
+def create_app(
+        extensions: list[APIRouter] = None,
+        middleware: list[Callable] = None
+) -> FastAPI:
     """
     Create FastAPI instance.
     """
@@ -30,8 +34,21 @@ def create_app() -> FastAPI:
     api.include_router(api_router)
     api.include_router(users_router)
 
+    # Register extensions
+    if extensions:
+        for extension in extensions:
+            api.include_router(extension)
+
+    # Register middleware
+    if middleware:
+        for middleware_item in middleware:
+            api.add_middleware(middleware_item)
+
     @api.middleware("http")
-    async def db_session_middleware(request: Request, call_next: Callable) -> None:
+    async def db_session_middleware(
+            request: Request,
+            call_next: Callable
+    ) -> None:
         """
         Middleware to add database connection to request state.
 
@@ -52,7 +69,6 @@ def create_app() -> FastAPI:
 
     # Set token url
     ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-
 
     return api
 
