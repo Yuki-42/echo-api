@@ -4,6 +4,26 @@ Contains application configuration interface.
 # Standard Library Imports
 from warnings import warn
 
+# Third Party Imports
+from dynaconf import Dynaconf
+
+# Local Imports
+
+# Constants
+__all__ = [
+    "Config"
+]
+
+# Load the settings object
+settings: Dynaconf = Dynaconf(
+    envvar_prefix="DYNACONF",
+    settings_files=["config.yaml", ".env"],
+    load_dotenv=True,
+    environments=True,
+    env_switcher="development",
+    lowercase_read=True
+)
+
 
 class Config:
     """
