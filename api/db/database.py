@@ -3,20 +3,19 @@ Contains database connection information and shared handlers.
 """
 
 # Standard Library Imports
-from typing import Type
 from asyncio import run
+from typing import Type
 
 # Third Party Imports
 from psycopg2 import connect
 from psycopg2.extras import DictConnection
 
 # Local Imports
-from ..internals.config import Config
-from .handlers.base_handler import BaseHandler
 from .handlers import *
+from ..internals.config import Config
 
 # Constants
-__all__ = ["database"]
+__all__ = ["Database"]
 
 
 class Database:
