@@ -138,7 +138,6 @@ class Users(BaseHandler):
 
         # Execute
         with self.connection.cursor() as cursor:
-            print(tag)
             cursor.execute("INSERT INTO users (email, username, tag) VALUES (%s, %s, %s) RETURNING *;", (email, username, tag))
             row: DictRow = cursor.fetchone()
 
