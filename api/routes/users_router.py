@@ -77,4 +77,3 @@ async def create_user(
     return user.to_private()
 
 
-

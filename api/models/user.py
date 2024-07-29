@@ -1,5 +1,5 @@
 """
-User Model.
+Contains user related models.
 """
 # Standard Library Imports
 from typing import Optional, Annotated
@@ -18,10 +18,6 @@ __all__ = [
     "User",
     "StatusType",
     "Status",
-    "File",
-    "Device",
-    "Token",
-    "PrivateUser"
 ]
 
 
@@ -60,43 +56,3 @@ class User(BaseModel):
     is_verified: bool
 
 
-class File(BaseModel):
-    """
-    File model.
-    """
-    id: UUID
-    created_at: datetime
-    created_by: User
-
-
-class Device(BaseModel):
-    """
-    Device model.
-    """
-    id: UUID
-    created_at: datetime
-    name: str
-    ip: str
-    mac: str
-    lang: str
-    os: str
-    screen_size: str
-    country: str
-
-
-class Token(BaseModel):
-    """
-    Token model.
-    """
-    user: User
-    device: Device
-    token: str
-    last_used: datetime
-
-
-class PrivateUser(User):
-    """
-    Private user model.
-    """
-    tokens: list[Token]
-    password_last_updated: datetime

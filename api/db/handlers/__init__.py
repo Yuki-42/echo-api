@@ -2,7 +2,7 @@
 Initializer for handlers.
 """
 
-from .users import Users
+from .user_handler import Users
 
 __all__ = [
     "Users"
