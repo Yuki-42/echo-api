@@ -1,11 +1,12 @@
 """
 Contains user related models.
 """
+
 # Standard Library Imports
-from typing import Optional, Annotated
-from enum import Enum
-from uuid import UUID
 from datetime import datetime
+from enum import Enum
+from typing import Optional
+from uuid import UUID
 
 # Third Party Imports
 from pydantic import BaseModel
