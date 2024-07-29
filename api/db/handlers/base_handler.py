@@ -57,3 +57,19 @@ class BaseHandler:
         """
         self._connection.close()
         self._connection = None
+
+    @property
+    def users(self):  # This is a great example of how to use a property to create a handler. (I think)
+        """
+        Get users handler.
+        """
+        from .user_handler import UsersHandler
+        return UsersHandler(self.connection)
+
+    @property
+    def secure(self):
+        """
+        Get secure handler.
+        """
+        from .secure_handler import SecureHandler
+        return SecureHandler(self.connection)
