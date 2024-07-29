@@ -1,6 +1,6 @@
 # Status
 
-Disbroad represents statuses as a JSON object internally. This object has two fields: `type` and `text`. 
+Echo represents statuses as a JSON object internally. This object has two fields: `type` and `text`. 
 
 The `type` field can be one of the values in this enum:
 ```python
