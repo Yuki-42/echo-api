@@ -2,7 +2,9 @@
 Contains application configuration interface.
 """
 # Standard Library Imports
+from secrets import SystemRandom
 from warnings import warn
+from pathlib import Path
 
 # Third Party Imports
 from dynaconf import Dynaconf
@@ -14,10 +16,18 @@ __all__ = [
     "Config"
 ]
 
+# Check if there is a config.yaml and .env file
+if not Path("config.yaml").is_file():
+    raise FileNotFoundError("config.yaml not found.")
+
+if not Path(".env").is_file():
+    raise FileNotFoundError(".env not found.")
+
 # Load the settings object
 settings: Dynaconf = Dynaconf(
     envvar_prefix="DYNACONF",
-    settings_files=["config.yaml", ".env"],
+    merge_enabled=True,
+    settings_files=[".secrets.yaml", "config.yaml"],
     load_dotenv=True,
     environments=True,
     env_switcher="development",
@@ -36,7 +46,26 @@ class Config:
     def __init__(
             self
     ) -> None:
+        """
+        Initialises the Config object.
+        """
         self.db = self.Database()
+
+    class Server:
+        """
+        Server configuration.
+        """
+        __slots__ = [
+            "secretKey",
+        ]
+
+        def __init__(
+                self
+        ) -> None:
+            """
+            Initialises the Server object.
+            """
+            self.secretKey = settings.server.secretKey
 
     class Database:
         """
@@ -53,9 +82,9 @@ class Config:
         def __init__(
                 self
         ) -> None:
-            warn("Database configuration is hard coded. Change IMMEDIATELY.")
-            self.name = "disbroad"
-            self.user = "disbroad"
-            self.password = "h4ycFyEahAvjcx4tbM!guZZUqvfR3Do6-Wpm4_PFC49tPXG@LtExQQ3nihixrH.*V!h6Q.Es8Rawr6sx3--MUZCLs7sF4hVumJpx"
-            self.host = "server"
-            self.port = 5432
+            self.name = settings.database.name
+            self.user = settings.database.user
+            self.host = settings.database.host
+            self.port = settings.database.port
+            self.password = settings.database.password
+
