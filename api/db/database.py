@@ -28,7 +28,7 @@ class Database:
     handlers: list[Type[any]]  # TODO: Get correct typing for this
 
     # Handlers
-    users: Users
+    users: UsersHandler
 
     def __init__(
             self,
@@ -37,7 +37,7 @@ class Database:
         self.config = config
 
         # Connect handlers
-        self.users = Users(self._new_connection())
+        self.users = UsersHandler(self._new_connection())
 
         # Add handlers to list
         self.handlers = [

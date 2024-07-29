@@ -1,5 +1,5 @@
 """
-Contains Users handler.
+Contains the Users handler.
 """
 
 # Standard Library Imports
@@ -16,11 +16,11 @@ from ..types.user import User
 
 # Constants
 __all__ = [
-    "Users"
+    "UsersHandler"
 ]
 
 
-class Users(BaseHandler):
+class UsersHandler(BaseHandler):
     """
     Users handler.
     """
