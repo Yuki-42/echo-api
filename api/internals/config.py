@@ -25,13 +25,13 @@ if not Path(".secrets.yaml").is_file():
             f"""
 default: &default
     server:
-        secretKey: {SystemRandom().randint(0, 2**256)}
 
     logging:
 
     database:
         password: "Developer.1"
-
+    auth:
+        secretKey: {SystemRandom().randint(0, 2**256)}
 development:
     <<: *default
 
@@ -58,7 +58,8 @@ class Config:
     Stores application wide configuration data.
     """
     __slots__ = [
-        "db"
+        "db",
+        "auth",
     ]
 
     def __init__(
@@ -68,22 +69,25 @@ class Config:
         Initialises the Config object.
         """
         self.db = self.Database()
+        self.auth = self.Auth()
 
-    class Server:
+    class Auth:
         """
-        Server configuration.
+        Authentication configuration.
         """
         __slots__ = [
             "secretKey",
+            "keyExpires"
         ]
 
         def __init__(
                 self
         ) -> None:
             """
-            Initialises the Server object.
+            Initialises the Auth object.
             """
-            self.secretKey = settings.server.secretKey
+            self.secretKey = settings.auth.secretKey
+            self.keyExpires = settings.auth.keyExpires
 
     class Database:
         """

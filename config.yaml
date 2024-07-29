@@ -3,12 +3,14 @@ default: &default
 
     logging:
 
-
     database:
         name: echo
         user: echo
         host: server
         port: 5432
+
+    auth:
+        keyExpires: 604800  # 1 week
 
 development:
     <<: *default
