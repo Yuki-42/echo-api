@@ -7,15 +7,17 @@ from hashlib import sha1
 from os import urandom
 
 # Third Party Imports
-from psycopg2.extras import DictConnection, DictCursor, DictRow
 from passlib.hash import pbkdf2_sha512
+from psycopg2.extras import DictConnection, DictRow
 
 # Local Imports
-from ..types.user import User
 from .base_handler import BaseHandler
+from ..types.user import User
 
 # Constants
-__all__ = ["Users"]
+__all__ = [
+    "Users"
+]
 
 
 class Users(BaseHandler):
