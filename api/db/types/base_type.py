@@ -95,7 +95,7 @@ class BaseType:
                 table=self._table_name,
                 key=key
             ),
-            (key_value,)
+            (str(key_value),)
         )
 
         return cursor

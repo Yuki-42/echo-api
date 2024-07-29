@@ -1,11 +1,14 @@
+"""
+Contains the user routes.
+"""
+
 # Standard Library Imports
-from typing import Annotated
 
 # Third Party Imports
-from fastapi import APIRouter, Form, Body
-from pydantic import BaseModel
+from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
+from pydantic import BaseModel
 
 # Local Imports
 from ..db.database import Database
