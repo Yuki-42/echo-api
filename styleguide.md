@@ -122,12 +122,10 @@ def function_name(arg1: type, arg2: type) -> return_type:
 
 ## File Headers
 
-All code files must have a multiline comment at the top of the file that includes the following information:
+All code files must have a multiline comment at the top of the file that describes the purpose of the file.
 
-- File name
-- Author
-- Date
-- Description
+This differs from the standard file header in that it should only describe the purpose of the file, as git already
+provides much more detailed information about the file and its history.
 
 After the multiline comment, there should be a blank line before the next section of the header.
 
@@ -144,10 +142,7 @@ Example:
 
 ```python
 """
-File: echo.py
-Author: John Doe
-Date: 01/01/2020
-Description: This file contains the implementation of the Echo API.
+This file contains the implementation of the Echo API.
 """
 
 # Standard Library Imports
