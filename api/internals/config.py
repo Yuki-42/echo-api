@@ -16,12 +16,30 @@ __all__ = [
     "Config"
 ]
 
-# Check if there is a config.yaml and .env file
-if not Path("config.yaml").is_file():
-    raise FileNotFoundError("config.yaml not found.")
+# Check if there is a secrets file
+if not Path(".secrets.yaml").is_file():
+    # Generate one for the users for convenience
+    warn("No secrets file found. Generating one for you.")
+    with open(".secrets.yaml", "w") as secrets:
+        secrets.write(
+            f"""
+default: &default
+    server:
+        secretKey: {SystemRandom().randint(0, 2**256)}
 
-if not Path(".env").is_file():
-    raise FileNotFoundError(".env not found.")
+    logging:
+
+    database:
+        password: "Developer.1"
+
+development:
+    <<: *default
+
+production:
+    <<: *default
+            """
+        )
+
 
 # Load the settings object
 settings: Dynaconf = Dynaconf(
