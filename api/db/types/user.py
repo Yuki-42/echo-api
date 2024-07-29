@@ -11,7 +11,9 @@ from psycopg2.sql import Identifier
 
 # Local Imports
 from .base_type import BaseType
-from ...models.user import User as PublicUser, PrivateUser, Token, Device
+from ...models.user import User as PublicUser
+from ...models.private import PrivateUser
+from ...models.secure import Token, Device
 
 # Constants
 __all__ = ["User"]
@@ -28,14 +30,9 @@ class User(BaseType):
             row: DictRow,
     ) -> None:
         # Initialize BaseType
-        super(User, self).__init__()
+        super(User, self).__init__(connection, row)
 
-        self._connection = connection
         self._table_name = Identifier("users")
-
-        # Set attributes
-        self.id = UUID(row["id"])
-        self.created_at = row["created_at"]
 
     def to_public(self) -> PublicUser:
         """
