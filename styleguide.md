@@ -155,3 +155,43 @@ This file contains the implementation of the Echo API.
 __all__ = []
 ```
 
+## SQL
+
+Due to the extensive use of SQL in the Echo API, all SQL queries must be written in a way that is very easy to read and understand.
+
+Do not ever use string concatenation to build SQL queries. This is a security risk and can lead to SQL injection attacks.
+
+SQL queries should be encapsulated in an instance of the `SQL` class from `psycopg2.sql`, which allows for the use of
+named parameters in the query.
+
+Except where absolutely necessary, all instances of database access should be done inside a `with` block that creates a
+cursor and automatically commits the transaction.
+
+Example:
+
+```python
+from psycopg2.sql import SQL, Identifier
+
+def get_user_by_id(user_id: int) -> dict:
+    """
+    Get a user by their ID.
+    
+    Args:
+        user_id: The ID of the user.
+        
+    Returns:
+        A dictionary representing the user.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(
+            SQL(
+                "SELECT * FROM users WHERE id = %s"
+            ),
+            [
+                user_id
+            ]
+        )
+        
+        return cursor.fetchone()
+```
+
