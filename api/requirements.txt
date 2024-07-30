@@ -4,3 +4,4 @@ websockets~=12.0
 passlib~=1.7.4
 dynaconf~=3.2.6
 pyjwt[crypto]
+rsa~=4.9
