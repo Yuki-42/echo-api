@@ -7,11 +7,12 @@ from hashlib import sha1
 from os import urandom
 
 # Third Party Imports
-from passlib.hash import pbkdf2_sha512
-from psycopg2.extras import DictConnection, DictRow
+from psycopg2.extras import DictRow
+from psycopg2.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
+from .secure_handler import SecureHandler
 from ..types.user import User
 
 # Constants
@@ -24,18 +25,6 @@ class UsersHandler(BaseHandler):
     """
     Users handler.
     """
-
-    def __init__(
-            self,
-            connection: DictConnection
-    ) -> None:
-        """
-        Initialize the Users handler.
-
-        Args:
-            connection (DictConnection): Database connection.
-        """
-        super(Users, self).__init__(connection)
 
     def id_get(
             self,
@@ -50,14 +39,16 @@ class UsersHandler(BaseHandler):
         Returns:
             User: User.
         """
-        # Query
-        query = """
-        SELECT id, created_at FROM users WHERE id = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */
-        """
-
         # Execute
         with self.connection.cursor() as cursor:
-            cursor.execute(query, (user_id,))
+            cursor.execute(
+                SQL(
+                    r"SELECT id, created_at FROM users WHERE id = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
+                ),
+                [
+                    user_id,
+                ]
+            )
             row: DictRow = cursor.fetchone()
 
         if row is None:
@@ -83,8 +74,12 @@ class UsersHandler(BaseHandler):
         # Execute
         with self.connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
-                [email]
+                SQL(
+                    r"SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
+                ),
+                [
+                    email
+                ]
             )
             row: DictRow = cursor.fetchone()
 
@@ -112,7 +107,7 @@ class UsersHandler(BaseHandler):
             User: Live user view.
         """
         # Hash the password
-        password = pbkdf2_sha512.hash(password)  # This overwrites the value in memory
+        password = SecureHandler.hash_password(password)  # This overwrites the value in memory
 
         # Calculate the user's tag (this is a 6 digit number added to the end of their username)
         #
@@ -128,7 +123,15 @@ class UsersHandler(BaseHandler):
         # Check if the tag is already in use
         with self.connection.cursor() as cursor:
             while True:
-                cursor.execute("SELECT 1 FROM users WHERE username = %s AND tag = %s;", (username, tag))
+                cursor.execute(
+                    SQL(
+                        "SELECT 1 FROM users WHERE username = %s AND tag = %s;"
+                    ),
+                    [
+                        username,
+                        tag,
+                    ]
+                )
                 if cursor.fetchone():
                     # Tag is in use, rehash
                     tag = int.from_bytes(sha1((email + username + str(urandom(16))).encode()).digest())
@@ -140,12 +143,39 @@ class UsersHandler(BaseHandler):
 
         # Execute
         with self.connection.cursor() as cursor:
-            cursor.execute("INSERT INTO users (email, username, tag) VALUES (%s, %s, %s) RETURNING *;", (email, username, tag))
+            cursor.execute(
+                SQL(
+                    "INSERT INTO users (email, username, tag) VALUES (%s, %s, %s) RETURNING *;"
+                ),
+                [
+                    email,
+                    username,
+                    tag
+                ]
+            )
             row: DictRow = cursor.fetchone()
 
         # Add user password
-        with self.connection.cursor() as cursor:
-            cursor.execute("INSERT INTO secured.passwords (user_id, password) VALUES (%s, %s);", (row["id"], password))
+        self.secure.set_password(
+            row["id"],
+            password
+        )
 
         # Return
         return User(self.connection, row)
+
+    def session_verify(
+            self,
+            email: str,
+            token: str
+    ) -> User | None:
+        """
+        Login a user.
+
+        Args:
+            email (str): User email.
+            token (str): User access token.
+
+        Returns:
+            User: Live user view.
+        """
