@@ -75,8 +75,9 @@ class Config:
         Authentication configuration.
         """
         __slots__ = [
-            "secretKey",
-            "keyExpires"
+            "secret_key",
+            "key_expires",
+            "key_size",
         ]
 
         def __init__(
@@ -85,8 +86,10 @@ class Config:
             """
             Initialises the Auth object.
             """
-            self.secretKey = settings.auth.secretKey
-            self.keyExpires = settings.auth.keyExpires
+            self.secret_key = settings.auth.secret_key
+            self.key_expires = settings.auth.key_expires
+            self.key_size = settings.auth.key_size
+
 
     class Database:
         """

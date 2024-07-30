@@ -11,7 +11,8 @@ default: &default
         port: 5432
 
     auth:
-        keyExpires: 604800  # 1 week
+        key_expires: 604800  # 1 week
+        key_size: 8192  # Big key size for good message security
 
 development:
     <<: *default
