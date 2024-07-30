@@ -105,13 +105,15 @@ class BaseType:
         cursor: DictCursor = self.connection.cursor()
         cursor.execute(
             SQL(
-                r"SELECT {column} FROM {table} WHERE {key} = %s;".format(
-                    column=column,
-                    table=self._table_name,
-                    key=key
-                )
+                r"SELECT {column} FROM {table} WHERE {key} = %s;"
+            ).format(
+                column=column,
+                table=self._table_name,
+                key=key
             ),
-            (str(key_value),)
+            [
+                str(key_value),
+            ]
         )
 
         return cursor
@@ -162,11 +164,11 @@ class BaseType:
         with self.connection.cursor() as cursor:
             cursor.execute(
                 SQL(
-                    r"UPDATE {table} SET {column} = %s WHERE {key} = %s;".format(
-                        column=column,
-                        table=self._table_name,
-                        key=key
-                    )
+                    r"UPDATE {table} SET {column} = %s WHERE {key} = %s;"
+                ).format(
+                    column=column,
+                    table=self._table_name,
+                    key=key
                 ),
                 (value, key_value)
             )
