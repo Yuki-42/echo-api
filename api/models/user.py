@@ -1,11 +1,12 @@
 """
-User Model.
+Contains user related models.
 """
+
 # Standard Library Imports
-from typing import Optional, Annotated
-from enum import Enum
-from uuid import UUID
 from datetime import datetime
+from enum import Enum
+from typing import Optional
+from uuid import UUID
 
 # Third Party Imports
 from pydantic import BaseModel
@@ -14,7 +15,11 @@ from pydantic import BaseModel
 
 # Constants
 
-__all__ = ["User"]
+__all__ = [
+    "User",
+    "StatusType",
+    "Status",
+]
 
 
 class StatusType(int, Enum):
@@ -52,43 +57,3 @@ class User(BaseModel):
     is_verified: bool
 
 
-class File(BaseModel):
-    """
-    File model.
-    """
-    id: UUID
-    created_at: datetime
-    created_by: User
-
-
-class Device(BaseModel):
-    """
-    Device model.
-    """
-    id: UUID
-    created_at: datetime
-    name: str
-    ip: str
-    mac: str
-    lang: str
-    os: str
-    screen_size: str
-    country: str
-
-
-class Token(BaseModel):
-    """
-    Token model.
-    """
-    user: User
-    device: Device
-    token: str
-    last_used: datetime
-
-
-class PrivateUser(User):
-    """
-    Private user model.
-    """
-    tokens: list[Token]
-    password_last_updated: datetime

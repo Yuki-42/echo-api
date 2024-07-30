@@ -3,20 +3,22 @@ Contains database connection information and shared handlers.
 """
 
 # Standard Library Imports
-from typing import Type
 from asyncio import run
+from typing import Type
 
 # Third Party Imports
 from psycopg2 import connect
 from psycopg2.extras import DictConnection
 
 # Local Imports
-from ..internals.config import Config
-from .handlers.base_handler import BaseHandler
 from .handlers import *
+from .handlers.secure_handler import SecureHandler
+from ..internals.config import Config
 
 # Constants
-__all__ = ["database"]
+__all__ = [
+    "Database"
+]
 
 
 class Database:
@@ -29,7 +31,8 @@ class Database:
     handlers: list[Type[any]]  # TODO: Get correct typing for this
 
     # Handlers
-    users: Users
+    users: UsersHandler
+    secure: SecureHandler
 
     def __init__(
             self,
@@ -38,12 +41,8 @@ class Database:
         self.config = config
 
         # Connect handlers
-        self.users = Users(self._new_connection())
-
-        # Add handlers to list
-        self.handlers = [
-            self.users
-        ]
+        self.users = UsersHandler(self._new_connection())
+        self.secure = SecureHandler(self._new_connection())
 
     def _new_connection(self) -> DictConnection:
         """

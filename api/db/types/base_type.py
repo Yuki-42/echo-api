@@ -3,15 +3,19 @@ Base DB type.
 """
 
 # Standard Library Imports
+from datetime import datetime
+from uuid import UUID
 
 # Third Party Imports
-from psycopg2.extras import DictConnection, DictCursor
+from psycopg2.extras import DictConnection, DictCursor, DictRow
 from psycopg2.sql import Identifier, SQL
 
 # Local Imports
 
 # Constants
-__all__ = ["BaseType"]
+__all__ = [
+    "BaseType"
+]
 
 
 class BaseType:
@@ -23,10 +27,22 @@ class BaseType:
     _table_name: Identifier
     _connection: DictConnection
 
-    def __init__(self) -> None:
+    id: UUID
+    created_at: datetime
+
+    def __init__(
+            self,
+            connection: DictConnection,
+            row: DictRow
+    ) -> None:
         """
         Initialize BaseType.
         """
+        self._connection = connection
+
+        # Set attributes
+        self.id = UUID(row["id"])
+        self.created_at = row["created_at"]
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.__dict__}>"
@@ -95,7 +111,9 @@ class BaseType:
                 table=self._table_name,
                 key=key
             ),
-            (key_value,)
+            [
+                str(key_value),
+            ]
         )
 
         return cursor
@@ -146,11 +164,11 @@ class BaseType:
         with self.connection.cursor() as cursor:
             cursor.execute(
                 SQL(
-                    r"UPDATE {table} SET {column} = %s WHERE {key} = %s;".format(
-                        column=column,
-                        table=self._table_name,
-                        key=key
-                    )
+                    r"UPDATE {table} SET {column} = %s WHERE {key} = %s;"
+                ).format(
+                    column=column,
+                    table=self._table_name,
+                    key=key
                 ),
                 (value, key_value)
             )

@@ -11,7 +11,9 @@ from psycopg2.sql import Identifier
 
 # Local Imports
 from .base_type import BaseType
-from ...models.user import User as PublicUser, PrivateUser, Token, Device
+from ...models.user import User as PublicUser
+from ...models.private import PrivateUser
+from ...models.secure import Token, Device
 
 # Constants
 __all__ = ["User"]
@@ -28,14 +30,9 @@ class User(BaseType):
             row: DictRow,
     ) -> None:
         # Initialize BaseType
-        super(User, self).__init__()
+        super(User, self).__init__(connection, row)
 
-        self._connection = connection
         self._table_name = Identifier("users")
-
-        # Set attributes
-        self.id = UUID(row["id"])
-        self.created_at = row["created_at"]
 
     def to_public(self) -> PublicUser:
         """
@@ -69,7 +66,7 @@ class User(BaseType):
             created_at=self.created_at,
             email=self.email,
             username=self.username,
-            icon=self.icon,
+            icon=self.icon_id,
             bio=self.bio,
             last_online=self.last_online,
             is_online=self.is_online,
@@ -122,8 +119,8 @@ class User(BaseType):
         """
         # Get username
         with self.id_get(
-            column=Identifier("username"),
-            id=self.id
+                column=Identifier("username"),
+                id=self.id
         ) as cursor:
             return cursor.fetchone()["username"]
 
@@ -158,8 +155,9 @@ class User(BaseType):
             column=Identifier("icon"),
             id=self.id
         )
-
-        return cursor.fetchone()["icon"]  # TODO: Ensure that this is an actual UUID
+        icon: UUID = cursor.fetchone()["icon"]
+        print(f"Icon type: {type(icon)}")
+        return icon  # TODO: Ensure that this is an actual UUID
 
     @icon_id.setter
     def icon_id(self, value: UUID) -> None:
@@ -223,7 +221,7 @@ class User(BaseType):
             column=Identifier("last_online"),
             id=self.id
         )
-        return datetime.strptime(cursor.fetchone()["last_online"], "%Y-%m-%d %H:%M:%S.%f")
+        return cursor.fetchone()["last_online"]  # Skip datetime conversion here because postgresql is based
 
     @last_online.setter
     def last_online(self, value: datetime) -> None:
@@ -345,7 +343,7 @@ class User(BaseType):
         with self.connection.cursor() as cursor:
             cursor.execute(
                 "SELECT * FROM secured.tokens WHERE user_id = %s;",
-                [self.id]
+                [str(self.id)]
             )
 
             token_data: list[DictRow] = cursor.fetchall()
@@ -370,22 +368,24 @@ class User(BaseType):
                     country=device_data["country"]
                 )
 
-        return [Token(
-            user=self,
-            device=Device(
-                id=UUID(token["device_id"]),
-                created_at=datetime.strptime(token["created_at"], "%Y-%m-%d %H:%M:%S.%f"),
-                name=token["name"],
-                ip=token["ip"],
-                mac=token["mac"],
-                lang=token["lang"],
-                os=token["os"],
-                screen_size=token["screen_size"],
-                country=token["country"]
-            ),
-            token=token["token"],
-            last_used=datetime.strptime(token["last_used"], "%Y-%m-%d %H:%M:%S.%f")
-        ) for token in token_data]
+        return [
+            Token(
+                user=self,
+                device=Device(
+                    id=UUID(token["device_id"]),
+                    created_at=datetime.strptime(token["created_at"], "%Y-%m-%d %H:%M:%S.%f"),
+                    name=token["name"],
+                    ip=token["ip"],
+                    mac=token["mac"],
+                    lang=token["lang"],
+                    os=token["os"],
+                    screen_size=token["screen_size"],
+                    country=token["country"]
+                ),
+                token=token["token"],
+                last_used=datetime.strptime(token["last_used"], "%Y-%m-%d %H:%M:%S.%f")
+            ) for token in token_data
+        ]
 
     @property
     def password_last_updated(self) -> datetime:
@@ -402,4 +402,4 @@ class User(BaseType):
                 [self.id]
             )
 
-            return datetime.strptime(cursor.fetchone()["last_updated"], "%Y-%m-%d %H:%M:%S.%f")
+            return cursor.fetchone()["last_updated"]

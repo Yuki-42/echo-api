@@ -2,8 +2,8 @@
 Initializer for handlers.
 """
 
-from .users import Users
+from .user_handler import UsersHandler
 
 __all__ = [
-    "Users"
+    "UsersHandler"
 ]

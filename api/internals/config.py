@@ -2,7 +2,55 @@
 Contains application configuration interface.
 """
 # Standard Library Imports
+from secrets import SystemRandom
 from warnings import warn
+from pathlib import Path
+
+# Third Party Imports
+from dynaconf import Dynaconf
+
+# Local Imports
+
+# Constants
+__all__ = [
+    "Config"
+]
+
+# Check if there is a secrets file
+if not Path(".secrets.yaml").is_file():
+    # Generate one for the users for convenience
+    warn("No secrets file found. Generating one for you.")
+    with open(".secrets.yaml", "w") as secrets:
+        secrets.write(
+            f"""
+default: &default
+    server:
+
+    logging:
+
+    database:
+        password: "Developer.1"
+    auth:
+        secretKey: {SystemRandom().randint(0, 2**256)}
+development:
+    <<: *default
+
+production:
+    <<: *default
+            """
+        )
+
+
+# Load the settings object
+settings: Dynaconf = Dynaconf(
+    envvar_prefix="DYNACONF",
+    merge_enabled=True,
+    settings_files=[".secrets.yaml", "config.yaml"],
+    load_dotenv=True,
+    environments=True,
+    env_switcher="development",
+    lowercase_read=True
+)
 
 
 class Config:
@@ -10,13 +58,36 @@ class Config:
     Stores application wide configuration data.
     """
     __slots__ = [
-        "db"
+        "db",
+        "auth",
     ]
 
     def __init__(
             self
     ) -> None:
+        """
+        Initialises the Config object.
+        """
         self.db = self.Database()
+        self.auth = self.Auth()
+
+    class Auth:
+        """
+        Authentication configuration.
+        """
+        __slots__ = [
+            "secretKey",
+            "keyExpires"
+        ]
+
+        def __init__(
+                self
+        ) -> None:
+            """
+            Initialises the Auth object.
+            """
+            self.secretKey = settings.auth.secretKey
+            self.keyExpires = settings.auth.keyExpires
 
     class Database:
         """
@@ -33,9 +104,9 @@ class Config:
         def __init__(
                 self
         ) -> None:
-            warn("Database configuration is hard coded. Change IMMEDIATELY.")
-            self.name = "disbroad"
-            self.user = "disbroad"
-            self.password = "h4ycFyEahAvjcx4tbM!guZZUqvfR3Do6-Wpm4_PFC49tPXG@LtExQQ3nihixrH.*V!h6Q.Es8Rawr6sx3--MUZCLs7sF4hVumJpx"
-            self.host = "server"
-            self.port = 5432
+            self.name = settings.database.name
+            self.user = settings.database.user
+            self.host = settings.database.host
+            self.port = settings.database.port
+            self.password = settings.database.password
+

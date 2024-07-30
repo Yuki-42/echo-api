@@ -2,14 +2,14 @@
 Defines the schema for the database. Execute this script to set up the database.
 */
 
-/* Create the disbroad user */
-CREATE USER disbroad WITH ENCRYPTED PASSWORD 'disbroad';
+/* Create the echo user */
+CREATE USER echo WITH ENCRYPTED PASSWORD 'echo';
 
-/* Create the disbroad database */
-CREATE DATABASE disbroad WITH OWNER disbroad;
+/* Create the echo database */
+CREATE DATABASE echo WITH OWNER echo;
 
-/* Connect to the disbroad database */
-\c disbroad;
+/* Connect to the echo database */
+\c echo;
 
 /* Enable UUID extension */
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -276,11 +276,11 @@ ALTER TABLE secured.verification_codes
 /* Apply permissions */
 REVOKE ALL ON ALL TABLES IN SCHEMA secured FROM PUBLIC;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA secured TO disbroad;
-GRANT USAGE ON SCHEMA secured TO disbroad;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA secured TO echo;
+GRANT USAGE ON SCHEMA secured TO echo;
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO disbroad;
-GRANT USAGE ON SCHEMA public TO disbroad;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO echo;
+GRANT USAGE ON SCHEMA public TO echo;
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO PUBLIC;
 GRANT USAGE ON SCHEMA public TO PUBLIC;
