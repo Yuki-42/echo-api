@@ -1,6 +1,8 @@
 """
 Contains the secure handler.
 """
+from psycopg2.extras import DictRow
+from psycopg2.sql import SQL
 
 # Standard Library Imports
 
@@ -50,3 +52,42 @@ class SecureHandler(BaseHandler):
             bool: Verification.
         """
         return crypt_context.verify(password, hashed_password)
+
+    def set_password(
+            self,
+            user_id: str,
+            password: str
+    ) -> None:
+        """
+        Sets a user's password.
+
+        Args:
+            user_id (str): User ID.
+            password (str): Password.
+        """
+
+        # Hash password
+        password: str = self.hash_password(password)  # Overwrite password with hashed password
+
+        # Delete existing password
+        with self.connection.cursor() as cursor:
+            cursor.execute(
+                SQL(
+                    r"DELETE FROM secured.passwords WHERE user_id = %s;",
+                ),
+                [
+                    user_id,
+                ]
+            )
+
+            # Insert new password
+            cursor.execute(
+                SQL(
+                    r"INSERT INTO secured.passwords (user_id, password) VALUES (%s, %s);",
+                ),
+                [
+                    user_id,
+                    password,
+                ]
+            )
+
