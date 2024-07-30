@@ -73,4 +73,4 @@ class Database:
         """
         Close all handlers.
         """
-        run(self.close)
+        run(self.close())
