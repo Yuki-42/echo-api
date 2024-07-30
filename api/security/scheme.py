@@ -3,13 +3,14 @@ Contains the security scheme and crypt config for the API.
 """
 
 # Standard Library Imports
-from datetime import timedelta
-from datetime import datetime
+from datetime import datetime, timedelta
+from warnings import warn
 
 # Third Party Imports
 from fastapi.security import OAuth2PasswordBearer
+from jwt import PyJWT, decode, encode
 from passlib.context import CryptContext
-from jwt import encode, decode, PyJWT
+from rsa import PrivateKey, PublicKey, newkeys
 
 # Local Imports
 from ..internals.config import CONFIG
@@ -29,7 +30,7 @@ crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def encode_access_token(
         data: dict[str, any],
-        expires_delta: int = CONFIG.auth.keyExpires
+        expires_delta: int = CONFIG.auth.key_expires
 ) -> PyJWT:
     """
     Encodes the provided data into a JWT token.
@@ -49,7 +50,7 @@ def encode_access_token(
     )
     return encode(
         to_encode,
-        CONFIG.auth.secretKey,
+        CONFIG.auth.secret_key,
         algorithm="HS256"
     )
 
@@ -68,6 +69,19 @@ def decode_access_token(
     """
     return decode(
         token,
-        CONFIG.auth.secretKey,
+        CONFIG.auth.secret_key,
         algorithms=["HS256"]
     )
+
+
+def generate_keypair() -> tuple[PublicKey, PrivateKey]:
+    """
+    Generates a public and private keypair for use with the API.
+
+    Returns:
+        tuple[str, str]: The public and private keypair.
+    """
+    if CONFIG.auth.key_size < 2048:
+        warn("Key size is less than 2048 bits, which is not recommended for security.")
+
+    return newkeys(CONFIG.auth.key_size)
