@@ -7,12 +7,12 @@ from typing import Callable
 # Third Party Imports
 from fastapi import FastAPI
 from fastapi.requests import Request
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes
 
 # Local Imports
-from .routes import *
-from .internals.config import Config
 from .db.database import Database
+from .internals.config import Config
+from .routes import *
 
 
 def create_app() -> FastAPI:
@@ -52,7 +52,6 @@ def create_app() -> FastAPI:
 
     # Set token url
     ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-
 
     return api
 
