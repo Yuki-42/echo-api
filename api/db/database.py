@@ -12,10 +12,13 @@ from psycopg2.extras import DictConnection
 
 # Local Imports
 from .handlers import *
+from .handlers.secure_handler import SecureHandler
 from ..internals.config import Config
 
 # Constants
-__all__ = ["Database"]
+__all__ = [
+    "Database"
+]
 
 
 class Database:
@@ -29,6 +32,7 @@ class Database:
 
     # Handlers
     users: UsersHandler
+    secure: SecureHandler
 
     def __init__(
             self,
@@ -38,11 +42,7 @@ class Database:
 
         # Connect handlers
         self.users = UsersHandler(self._new_connection())
-
-        # Add handlers to list
-        self.handlers = [
-            self.users
-        ]
+        self.secure = SecureHandler(self._new_connection())
 
     def _new_connection(self) -> DictConnection:
         """
