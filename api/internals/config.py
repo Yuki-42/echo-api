@@ -31,7 +31,7 @@ default: &default
     database:
         password: "Developer.1"
     auth:
-        secretKey: {SystemRandom().randint(0, 2**256)}
+        secretKey: {SystemRandom().randint(0, 2 ** 256)}
 development:
     <<: *default
 
@@ -39,7 +39,6 @@ production:
     <<: *default
             """
         )
-
 
 # Load the settings object
 settings: Dynaconf = Dynaconf(
@@ -110,3 +109,6 @@ class Config:
             self.port = settings.database.port
             self.password = settings.database.password
 
+
+# Create the config object
+CONFIG: Config = Config()
