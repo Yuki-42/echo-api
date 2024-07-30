@@ -1,3 +1,4 @@
+# Default config file for the echo server
 default: &default
     server:
 
