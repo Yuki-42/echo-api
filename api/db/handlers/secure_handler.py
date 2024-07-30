@@ -1,14 +1,13 @@
 """
 Contains the secure handler.
 """
+
 # Standard Library Imports
 
 # Third Party Imports
 
 # Local Imports
 from .base_handler import BaseHandler
-from ..types.user import User
-from ...models.secure import Device, Token
 from ...security.scheme import crypt_context
 
 
