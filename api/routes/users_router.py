@@ -49,12 +49,12 @@ async def read_users(
     db: Database = request.state.db
 
     # Check if user exists
-    user: User = db.users.id_get(user_id)
+    user: User = await db.users.id_get(user_id)
 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    return user.to_public()
+    return await user.to_public()
 
 
 @users_router.post("/", tags=["users"])
@@ -77,7 +77,7 @@ async def create_user(
     # Create user
     user = await db.users.new(data.email, data.username, data.password)
 
-    return user.to_private()
+    return await user.to_private()
 
 
 @users_router.post("/login", tags=["users"])
@@ -101,4 +101,4 @@ async def login_user(
     if not db.secure.verify_password(data.password, data.password):
         raise HTTPException(status_code=403, detail="Incorrect password")
 
-    return user.to_private()
+    return await user.to_private()

@@ -90,7 +90,6 @@ class Config:
             self.key_expires = settings.auth.key_expires
             self.key_size = settings.auth.key_size
 
-
     class Database:
         """
         Database configuration.

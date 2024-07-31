@@ -3,7 +3,6 @@ Contains database connection information and shared handlers.
 """
 
 # Standard Library Imports
-from asyncio import run
 from typing import Type
 
 # Third Party Imports
@@ -44,6 +43,12 @@ class Database:
         self.users = UsersHandler(self._new_connection())
         self.secure = SecureHandler(self._new_connection())
 
+        # Add handlers to list
+        self.handlers = [
+            self.users,
+            self.secure
+        ]
+
     def _new_connection(self) -> AsyncConnection:
         """
         Create a new database connection.
@@ -73,4 +78,4 @@ class Database:
         """
         Close all handlers.
         """
-        run(self.close())
+        self.close()
