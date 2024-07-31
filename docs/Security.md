@@ -28,8 +28,7 @@ can only be used on the device that it was stolen from. This is to prevent a tok
 
 The application uses HTTPS on all endpoints to secure traffic in transit between the client and the server. This is 
 considered the absolute minimum for security. In addition to this, the application makes use of end-to-end encryption 
-when sending messages directly between users. Each user has a public and private key pair. The public key is stored in
-the database completely unencrypted. The private key is stored in the database encrypted using the user's hashed and 
-salted password. 
-This may seem insecure, but the private key is only ever decrypted in memory on the server when the user logs in.
+when sending messages directly between users. This makes use of a client-sided Diffie-Hellman key exchange to generate a
+shared secret between the two users.
 
+This shared secret is used to encrypt and decrypt messages inside the client. 
