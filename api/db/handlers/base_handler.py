@@ -17,7 +17,7 @@ class BaseHandler:
     """
     Base handler.
     """
-    _connection: AsyncConnection
+    connection: AsyncConnection
 
     def __init__(
             self,
@@ -36,20 +36,6 @@ class BaseHandler:
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    @property
-    def connection(self) -> AsyncConnection:
-        """
-        Get connection.
-
-        Returns:
-            DictConnection: Database connection.
-        """
-
-        if not self._connection:
-            raise AttributeError("Connection not set.")
-
-        return self._connection
 
     def close(self) -> None:
         """

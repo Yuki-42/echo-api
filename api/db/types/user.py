@@ -30,12 +30,19 @@ class User(BaseType):
             connection: AsyncConnection,
             row: DictRow,
     ) -> None:
+        """
+        Initialize User.
+
+        Args:
+            connection (AsyncConnection): Connection.
+            row (DictRow): Row.
+        """
         # Initialize BaseType
         super(User, self).__init__(connection, row)
 
         self._table_name = Identifier("users")
 
-    def to_public(self) -> PublicUser:
+    async def to_public(self) -> PublicUser:
         """
         Convert to model.
 
@@ -45,8 +52,8 @@ class User(BaseType):
         return PublicUser(
             id=self.id,
             created_at=self.created_at,
-            email=self.email,
-            username=self.username,
+            email=self.get_email,
+            username=self.get_username,
             icon=self.icon,
             bio=self.bio,
             last_online=self.last_online,
@@ -55,7 +62,7 @@ class User(BaseType):
             is_verified=self.is_verified
         )
 
-    def to_private(self) -> PrivateUser:
+    async def to_private(self) -> PrivateUser:
         """
         Convert to private model.
 
@@ -65,8 +72,8 @@ class User(BaseType):
         return PrivateUser(
             id=self.id,
             created_at=self.created_at,
-            email=self.email,
-            username=self.username,
+            email=self.get_email,
+            username=self.get_username,
             icon=self.icon_id,
             bio=self.bio,
             last_online=self.last_online,
@@ -77,8 +84,7 @@ class User(BaseType):
             password_last_updated=self.password_last_updated
         )
 
-    @property
-    def email(self) -> str:
+    async def get_email(self) -> str:
         """
         Get email.
 
@@ -90,10 +96,17 @@ class User(BaseType):
                 column=Identifier("email"),
                 id=str(self.id)
         ) as cursor:
-            return cursor.fetchone()["email"]
+            cursor: AsyncCursor
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
-    @email.setter
-    def email(self, value: str) -> None:
+        # Return email
+        return row["email"]
+
+    async def set_email(
+            self,
+            value: str
+    ) -> None:
         """
         Set email.
 
@@ -104,29 +117,35 @@ class User(BaseType):
             None
         """
         # Set email
-        self.id_set(
+        await self.id_set(
             column=Identifier("email"),
-            id=self.id,
+            id=str(self.id),
             value=value
         )
 
-    @property
-    def username(self) -> str:
+    async def get_username(self) -> str:
         """
         Get username.
 
         Returns:
             str: Username.
         """
-        # Get username
+        # Get get_username
         with self.id_get(
                 column=Identifier("username"),
-                id=self.id
+                id=str(self.id)
         ) as cursor:
-            return cursor.fetchone()["username"]
+            cursor: AsyncCursor
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
-    @username.setter
-    def username(self, value: str) -> None:
+        # Return username
+        return row["username"]
+
+    async def set_username(
+            self,
+            value: str
+    ) -> None:
         """
         Set username.
 
@@ -136,10 +155,10 @@ class User(BaseType):
         Returns:
             None
         """
-        # Set username
-        self.id_set(
+        # Set get_username
+        await self.id_set(
             column=Identifier("username"),
-            id=self.id,
+            id=str(self.id),
             value=value
         )
 
@@ -154,8 +173,9 @@ class User(BaseType):
         # Get icon
         cursor: AsyncCursor = self.id_get(
             column=Identifier("icon"),
-            id=self.id
+            id=str(self.id)
         )
+        row: DictRow = cursor.fetchone()
         icon: UUID = cursor.fetchone()["icon"]
         print(f"Icon type: {type(icon)}")
         return icon  # TODO: Ensure that this is an actual UUID

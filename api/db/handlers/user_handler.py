@@ -41,7 +41,8 @@ class UsersHandler(BaseHandler):
         Returns:
             User: User.
         """
-        # Execute
+        # Create a cursor
+        cursor: AsyncCursor
         with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(

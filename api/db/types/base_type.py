@@ -10,6 +10,7 @@ from uuid import UUID
 from psycopg import AsyncConnection, AsyncCursor
 from psycopg.rows import DictRow
 from psycopg.sql import Identifier, SQL
+from psycopg.cursor import Cursor
 
 # Local Imports
 
@@ -103,21 +104,23 @@ class BaseType:
         Returns:
             cursor (DictCursor): Cursor.
         """
-        cursor: AsyncCursor = self.connection.cursor()
-        await cursor.execute(
-            SQL(
-                r"SELECT {column} FROM {table} WHERE {key} = %s;"
-            ).format(
-                column=column,
-                table=self._table_name,
-                key=key
-            ),
-            [
-                str(key_value),
-            ]
-        )
+        # Get cursor
+        cursor: AsyncCursor
+        with self.connection.cursor() as cursor:
+            await cursor.execute(
+                SQL(
+                    r"SELECT {column} FROM {table} WHERE {key} = %s;"
+                ).format(
+                    column=column,
+                    table=self._table_name,
+                    key=key
+                ),
+                [
+                    str(key_value),
+                ]
+            )
 
-        return cursor
+            return cursor
 
     async def id_set(
             self,
@@ -162,6 +165,7 @@ class BaseType:
         Returns:
             None
         """
+        cursor: AsyncCursor
         with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
@@ -171,5 +175,8 @@ class BaseType:
                     table=self._table_name,
                     key=key
                 ),
-                (value, key_value)
+                [
+                    value,
+                    key_value
+                ]
             )

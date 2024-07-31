@@ -2,16 +2,15 @@
 Contains the secure handler.
 """
 
-
 # Standard Library Imports
 
 # Third Party Imports
+from psycopg import AsyncCursor
 from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
 from ...security.scheme import crypt_context
-
 
 # Constants
 
@@ -53,7 +52,7 @@ class SecureHandler(BaseHandler):
         """
         return crypt_context.verify(password, hashed_password)
 
-    def set_password(
+    async def set_password(
             self,
             user_id: str,
             password: str
@@ -69,9 +68,11 @@ class SecureHandler(BaseHandler):
         # Hash password
         password: str = self.hash_password(password)  # Overwrite password with hashed password
 
-        # Delete existing password
+        # Get cursor
+        cursor: AsyncCursor
         with self.connection.cursor() as cursor:
-            cursor.execute(
+            # Remove old password
+            await cursor.execute(
                 SQL(
                     r"DELETE FROM secured.passwords WHERE user_id = %s;",
                 ),
@@ -81,7 +82,7 @@ class SecureHandler(BaseHandler):
             )
 
             # Insert new password
-            cursor.execute(
+            await cursor.execute(
                 SQL(
                     r"INSERT INTO secured.passwords (user_id, password) VALUES (%s, %s);",
                 ),
@@ -90,4 +91,3 @@ class SecureHandler(BaseHandler):
                     password,
                 ]
             )
-
