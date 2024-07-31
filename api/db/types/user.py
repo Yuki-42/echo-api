@@ -17,7 +17,9 @@ from ...models.private import PrivateUser
 from ...models.secure import Token, Device
 
 # Constants
-__all__ = ["User"]
+__all__ = [
+    "User"
+]
 
 
 class User(BaseType):
@@ -52,14 +54,14 @@ class User(BaseType):
         return PublicUser(
             id=self.id,
             created_at=self.created_at,
-            email=self.get_email,
-            username=self.get_username,
-            icon=self.icon,
-            bio=self.bio,
-            last_online=self.last_online,
-            is_online=self.is_online,
-            is_banned=self.is_banned,
-            is_verified=self.is_verified
+            email=await self.get_email(),
+            username=await self.get_username(),
+            icon=await self.get_icon(),
+            bio=await self.get_bio(),
+            last_online=await self.get_last_online(),
+            is_online=await self.get_is_online(),
+            is_banned=await self.get_is_banned(),
+            is_verified=await self.get_is_verified()
         )
 
     async def to_private(self) -> PrivateUser:
@@ -72,16 +74,16 @@ class User(BaseType):
         return PrivateUser(
             id=self.id,
             created_at=self.created_at,
-            email=self.get_email,
-            username=self.get_username,
-            icon=self.icon_id,
-            bio=self.bio,
-            last_online=self.last_online,
-            is_online=self.is_online,
-            is_banned=self.is_banned,
-            is_verified=self.is_verified,
-            tokens=self.tokens,
-            password_last_updated=self.password_last_updated
+            email=await self.get_email(),
+            username=await self.get_username(),
+            icon=await self.get_icon(),
+            bio=await self.get_bio(),
+            last_online=await self.get_last_online(),
+            is_online=await self.get_is_online(),
+            is_banned=await self.get_is_banned(),
+            is_verified=await self.get_is_verified(),
+            tokens=await self.get_tokens(),
+            password_last_updated=await self.get_password_last_updated()
         )
 
     async def get_email(self) -> str:
@@ -171,8 +173,8 @@ class User(BaseType):
         """
         # Get icon
         with await self.id_get(
-            column=Identifier("icon"),
-            id=str(self.id)
+                column=Identifier("icon"),
+                id=str(self.id)
         ) as cursor:
             cursor: AsyncCursor
             # Get row
@@ -222,8 +224,8 @@ class User(BaseType):
         """
         # Get bio
         with await self.id_get(
-            column=Identifier("bio"),
-            id=self.id
+                column=Identifier("bio"),
+                id=self.id
         ) as cursor:
             cursor: AsyncCursor
 
@@ -232,8 +234,10 @@ class User(BaseType):
 
         return row["bio"]
 
-    @bio.setter
-    def bio(self, value: str) -> None:
+    async def set_bio(
+            self,
+            value: str
+    ) -> None:
         """
         Set bio.
 
@@ -241,23 +245,34 @@ class User(BaseType):
             value (str): Bio.
         """
         # Set bio
-        self.id_set(
+        await self.id_set(
             column=Identifier("bio"),
             id=self.id,
             value=value
         )
 
-    @property
-    def last_online(self) -> datetime:
-        # Get last_online
-        cursor: AsyncCursor = self.id_get(
-            column=Identifier("last_online"),
-            id=self.id
-        )
-        return cursor.fetchone()["last_online"]  # Skip datetime conversion here because postgresql is based
+    async def get_last_online(self) -> datetime:
+        """
+        Get last online.
 
-    @last_online.setter
-    def last_online(self, value: datetime) -> None:
+        Returns:
+            datetime: Last online.
+        """
+        # Get last_online
+        with await self.id_get(
+                column=Identifier("last_online"),
+                id=self.id
+        ) as cursor:
+            cursor: AsyncCursor
+
+            # Get row
+            row: DictRow = await cursor.fetchone()
+        return row["last_online"]  # Skip datetime conversion here because postgresql is based
+
+    async def set_last_online(
+            self,
+            value: datetime
+    ) -> None:
         """
         Set last online.
 
@@ -265,14 +280,13 @@ class User(BaseType):
             value (datetime): Last online.
         """
         # Set last_online
-        self.id_set(
+        await self.id_set(
             column=Identifier("last_online"),
             id=self.id,
             value=value
         )
 
-    @property
-    def is_online(self) -> bool:
+    async def get_is_online(self) -> bool:
         """
         Get online status.
 
@@ -280,15 +294,21 @@ class User(BaseType):
             bool: Online status.
         """
         # Get is_online
-        cursor: AsyncCursor = self.id_get(
-            column=Identifier("is_online"),
-            id=self.id
-        )
+        with await self.id_get(
+                column=Identifier("is_online"),
+                id=self.id
+        ) as cursor:
+            cursor: AsyncCursor
 
-        return cursor.fetchone()["is_online"]
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
-    @is_online.setter
-    def is_online(self, value: bool) -> None:
+        return row["is_online"]
+
+    async def set_is_online(
+            self,
+            value: bool
+    ) -> None:
         """
         Set online status.
 
@@ -296,14 +316,13 @@ class User(BaseType):
             value (bool): Online status.
         """
         # Set is_online
-        self.id_set(
+        await self.id_set(
             column=Identifier("is_online"),
             id=self.id,
             value=value
         )
 
-    @property
-    def is_banned(self) -> bool:
+    async def get_is_banned(self) -> bool:
         """
         Get ban status.
 
@@ -311,15 +330,21 @@ class User(BaseType):
             bool: Ban status.
         """
         # Get is_banned
-        cursor: AsyncCursor = self.id_get(
-            column=Identifier("is_banned"),
-            id=self.id
-        )
+        with self.id_get(
+                column=Identifier("is_banned"),
+                id=self.id
+        ) as cursor:
+            cursor: AsyncCursor
 
-        return cursor.fetchone()["is_banned"]
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
-    @is_banned.setter
-    def is_banned(self, value: bool) -> None:
+        return row["is_banned"]
+
+    async def set_is_banned(
+            self,
+            value: bool
+    ) -> None:
         """
         Set ban status.
 
@@ -327,14 +352,13 @@ class User(BaseType):
             value (bool): Ban status.
         """
         # Set is_banned
-        self.id_set(
+        await self.id_set(
             column=Identifier("is_banned"),
             id=self.id,
             value=value
         )
 
-    @property
-    def is_verified(self) -> bool:
+    async def get_is_verified(self) -> bool:
         """
         Get verified status.
 
@@ -342,15 +366,18 @@ class User(BaseType):
             bool: Verified status.
         """
         # Get is_verified
-        cursor: AsyncCursor = self.id_get(
-            column=Identifier("is_verified"),
-            id=self.id
-        )
+        with self.id_get(
+                column=Identifier("is_verified"),
+                id=self.id
+        ) as cursor:
+            cursor: AsyncCursor
 
-        return cursor.fetchone()["is_verified"]
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
-    @is_verified.setter
-    def is_verified(self, value: bool) -> None:
+        return row["is_verified"]
+
+    async def set_is_verified(self, value: bool) -> None:
         """
         Set verified status.
 
@@ -358,14 +385,13 @@ class User(BaseType):
             value (bool): Verified status.
         """
         # Set is_verified
-        self.id_set(
+        await self.id_set(
             column=Identifier("is_verified"),
             id=self.id,
             value=value
         )
 
-    @property
-    def tokens(self) -> list[Token]:
+    async def get_tokens(self) -> list[Token]:
         """
         Get tokens.
 
@@ -374,21 +400,27 @@ class User(BaseType):
         """
         # Get tokens
         with self.connection.cursor() as cursor:
-            cursor.execute(
+            cursor: AsyncCursor
+
+            # Get tokens
+            await cursor.execute(
                 "SELECT * FROM secured.tokens WHERE user_id = %s;",
                 [str(self.id)]
             )
 
-            token_data: list[DictRow] = cursor.fetchall()
+            token_data: list[DictRow] = await cursor.fetchall()
 
         # Get devices
         for token in token_data:
             with self.connection.cursor() as cursor:
-                cursor.execute(
+                cursor: AsyncCursor
+
+                # Get device
+                await cursor.execute(
                     "SELECT * FROM secured.devices WHERE id = %s;",
                     [token["device_id"]]
                 )
-                device_data: DictRow = cursor.fetchone()
+                device_data: DictRow = await cursor.fetchone()
                 token["device"] = Device(
                     id=device_data["id"],
                     created_at=datetime.strptime(device_data["created_at"], "%Y-%m-%d %H:%M:%S.%f"),
@@ -420,8 +452,7 @@ class User(BaseType):
             ) for token in token_data
         ]
 
-    @property
-    def password_last_updated(self) -> datetime:
+    async def get_password_last_updated(self) -> datetime:
         """
         Get password last updated.
 
@@ -430,9 +461,14 @@ class User(BaseType):
         """
         # Create cursor
         with self.connection.cursor() as cursor:
-            cursor.execute(
+            cursor: AsyncCursor
+
+            # Get last updated
+            await cursor.execute(
                 "SELECT last_updated FROM secured.passwords WHERE user_id = %s;",
                 [self.id]
             )
 
-            return cursor.fetchone()["last_updated"]
+            row: DictRow = await cursor.fetchone()
+
+        return row["last_updated"]
