@@ -173,7 +173,7 @@ class UsersHandler(BaseHandler):
         # Return
         return User(self.connection, row)
 
-    def session_verify(
+    async def session_verify(
             self,
             email: str,
             token: str,
