@@ -26,7 +26,7 @@ CREATE TABLE public.users
     tag         INT       NOT NULL DEFAULT 0,
     icon        uuid,
     bio         TEXT,
-    status      jsonb     NOT NULL DEFAULT '{}', /* Json Object. See docs/database.md#status */ /* TODO: Actually do this small documentation */
+    status      jsonb     NOT NULL DEFAULT '{"type": 0, "text": ""}', /* Json Object. See docs/database.md#status */
     last_online TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_online   BOOLEAN   NOT NULL DEFAULT FALSE,
     is_banned   BOOLEAN   NOT NULL DEFAULT FALSE,
