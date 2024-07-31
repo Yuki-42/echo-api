@@ -129,6 +129,7 @@ class UsersHandler(BaseHandler):
 
         # Check if the tag is already in use
         with self.connection.cursor() as cursor:
+            cursor: AsyncCursor
             while True:
                 await cursor.execute(
                     SQL(
@@ -150,6 +151,7 @@ class UsersHandler(BaseHandler):
 
         # Execute
         with self.connection.cursor() as cursor:
+            cursor: AsyncCursor
             await cursor.execute(
                 SQL(
                     "INSERT INTO users (email, username, tag) VALUES (%s, %s, %s) RETURNING *;"
