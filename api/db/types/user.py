@@ -162,8 +162,7 @@ class User(BaseType):
             value=value
         )
 
-    @property
-    def icon_id(self) -> UUID:
+    async def get_icon_id(self) -> UUID:
         """
         Get icon.
 
@@ -171,17 +170,23 @@ class User(BaseType):
             UUID: Icon.
         """
         # Get icon
-        cursor: AsyncCursor = self.id_get(
+        with await self.id_get(
             column=Identifier("icon"),
             id=str(self.id)
-        )
-        row: DictRow = cursor.fetchone()
-        icon: UUID = cursor.fetchone()["icon"]
+        ) as cursor:
+            cursor: AsyncCursor
+            # Get row
+            row: DictRow = await cursor.fetchone()
+
+        # Get icon
+        icon: UUID = row["icon"]
         print(f"Icon type: {type(icon)}")
         return icon  # TODO: Ensure that this is an actual UUID
 
-    @icon_id.setter
-    def icon_id(self, value: UUID) -> None:
+    async def set_icon_id(
+            self,
+            value: UUID
+    ) -> None:
         """
         Set icon.
 
@@ -191,10 +196,14 @@ class User(BaseType):
         Returns:
             None
         """
-        #
+        # Set icon
+        await self.id_set(
+            column=Identifier("icon"),
+            id=str(self.id),
+            value=value
+        )
 
-    @property
-    def icon(self):
+    async def get_icon(self):
         """
         Get icon.
 
@@ -202,10 +211,9 @@ class User(BaseType):
             Icon: Icon.
         """
         # Create new transaction
-        raise NotImplementedError("Icon property not implemented.")  # TODO: Implement icon property
+        raise NotImplementedError("Icon not implemented.")  # TODO: Implement icon property
 
-    @property
-    async def bio(self) -> str:
+    async def get_bio(self) -> str:
         """
         Get bio.
 
@@ -213,13 +221,14 @@ class User(BaseType):
             str: Bio.
         """
         # Get bio
-        cursor: AsyncCursor = await self.id_get(
+        with await self.id_get(
             column=Identifier("bio"),
             id=self.id
-        )
+        ) as cursor:
+            cursor: AsyncCursor
 
-        # Get bio
-        row: DictRow = await cursor.fetchone()
+            # Get row
+            row: DictRow = await cursor.fetchone()
 
         return row["bio"]
 
