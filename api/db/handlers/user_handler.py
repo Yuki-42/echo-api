@@ -7,8 +7,9 @@ from hashlib import sha1
 from os import urandom
 
 # Third Party Imports
-from psycopg2.extras import DictRow
-from psycopg2.sql import SQL
+from psycopg import AsyncCursor
+from psycopg.rows import DictRow
+from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
@@ -27,7 +28,7 @@ class UsersHandler(BaseHandler):
     Users handler.
     """
 
-    def id_get(
+    async def id_get(
             self,
             user_id: str
     ) -> User | None:
@@ -42,7 +43,7 @@ class UsersHandler(BaseHandler):
         """
         # Execute
         with self.connection.cursor() as cursor:
-            cursor.execute(
+            await cursor.execute(
                 SQL(
                     r"SELECT id, created_at FROM users WHERE id = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
                 ),
@@ -50,7 +51,7 @@ class UsersHandler(BaseHandler):
                     user_id,
                 ]
             )
-            row: DictRow = cursor.fetchone()
+            row: DictRow = await cursor.fetchone()
 
         if row is None:
             return None
@@ -58,7 +59,7 @@ class UsersHandler(BaseHandler):
         # Return
         return User(self.connection, row)
 
-    def email_get(
+    async def email_get(
             self,
             email: str
     ) -> User | None:
@@ -71,18 +72,22 @@ class UsersHandler(BaseHandler):
         Returns:
             User: User.
         """
+        # Create a cursor
+        cursor: AsyncCursor = self.connection.cursor()
 
         # Execute
-        with self.connection.cursor() as cursor:
-            cursor.execute(
-                SQL(
-                    r"SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
-                ),
-                [
-                    email
-                ]
-            )
-            row: DictRow = cursor.fetchone()
+        await cursor.execute(
+            SQL(
+                r"SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
+            ),
+            [
+                email
+            ]
+        )
+        row: DictRow = await cursor.fetchone()
+
+        # Kill the cursor
+        await cursor.close()
 
         if row is None:
             return None
@@ -90,7 +95,7 @@ class UsersHandler(BaseHandler):
         # Return
         return User(self.connection, row)
 
-    def new(
+    async def new(
             self,
             email: str,
             username: str,
@@ -124,7 +129,7 @@ class UsersHandler(BaseHandler):
         # Check if the tag is already in use
         with self.connection.cursor() as cursor:
             while True:
-                cursor.execute(
+                await cursor.execute(
                     SQL(
                         "SELECT 1 FROM users WHERE username = %s AND tag = %s;"
                     ),
@@ -133,7 +138,7 @@ class UsersHandler(BaseHandler):
                         tag,
                     ]
                 )
-                if cursor.fetchone():
+                if await cursor.fetchone():
                     # Tag is in use, rehash
                     tag = int.from_bytes(sha1((email + username + str(urandom(16))).encode()).digest())
 
@@ -144,7 +149,7 @@ class UsersHandler(BaseHandler):
 
         # Execute
         with self.connection.cursor() as cursor:
-            cursor.execute(
+            await cursor.execute(
                 SQL(
                     "INSERT INTO users (email, username, tag) VALUES (%s, %s, %s) RETURNING *;"
                 ),
@@ -154,10 +159,10 @@ class UsersHandler(BaseHandler):
                     tag
                 ]
             )
-            row: DictRow = cursor.fetchone()
+            row: DictRow = await cursor.fetchone()
 
         # Add user password
-        self.secure.set_password(
+        await self.secure.set_password(
             row["id"],
             password
         )

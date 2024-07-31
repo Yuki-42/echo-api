@@ -69,13 +69,13 @@ async def create_user(
     db: Database = request.state.db
 
     # Check if the user exists
-    user: User = db.users.email_get(data.email)
+    user: User = await db.users.email_get(data.email)
 
     if user is not None:
         raise HTTPException(status_code=409, detail="User already exists")
 
     # Create user
-    user = db.users.new(data.email, data.username, data.password)
+    user = await db.users.new(data.email, data.username, data.password)
 
     return user.to_private()
 
@@ -92,7 +92,7 @@ async def login_user(
     db: Database = request.state.db
 
     # Check if the user exists
-    user: User = db.users.email_get(data.email)
+    user: User = await db.users.email_get(data.email)
 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")

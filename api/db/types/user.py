@@ -6,8 +6,9 @@ from datetime import datetime
 from uuid import UUID
 
 # Third Party Imports
-from psycopg2.extras import DictConnection, DictCursor, DictRow
-from psycopg2.sql import Identifier
+from psycopg import AsyncConnection, AsyncCursor
+from psycopg.rows import DictRow
+from psycopg.sql import Identifier
 
 # Local Imports
 from .base_type import BaseType
@@ -26,7 +27,7 @@ class User(BaseType):
 
     def __init__(
             self,
-            connection: DictConnection,
+            connection: AsyncConnection,
             row: DictRow,
     ) -> None:
         # Initialize BaseType
@@ -151,7 +152,7 @@ class User(BaseType):
             UUID: Icon.
         """
         # Get icon
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = self.id_get(
             column=Identifier("icon"),
             id=self.id
         )
@@ -184,7 +185,7 @@ class User(BaseType):
         raise NotImplementedError("Icon property not implemented.")  # TODO: Implement icon property
 
     @property
-    def bio(self) -> str:
+    async def bio(self) -> str:
         """
         Get bio.
 
@@ -192,12 +193,15 @@ class User(BaseType):
             str: Bio.
         """
         # Get bio
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = await self.id_get(
             column=Identifier("bio"),
             id=self.id
         )
 
-        return cursor.fetchone()["bio"]
+        # Get bio
+        row: DictRow = await cursor.fetchone()
+
+        return row["bio"]
 
     @bio.setter
     def bio(self, value: str) -> None:
@@ -217,7 +221,7 @@ class User(BaseType):
     @property
     def last_online(self) -> datetime:
         # Get last_online
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = self.id_get(
             column=Identifier("last_online"),
             id=self.id
         )
@@ -247,7 +251,7 @@ class User(BaseType):
             bool: Online status.
         """
         # Get is_online
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = self.id_get(
             column=Identifier("is_online"),
             id=self.id
         )
@@ -278,7 +282,7 @@ class User(BaseType):
             bool: Ban status.
         """
         # Get is_banned
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = self.id_get(
             column=Identifier("is_banned"),
             id=self.id
         )
@@ -309,7 +313,7 @@ class User(BaseType):
             bool: Verified status.
         """
         # Get is_verified
-        cursor: DictCursor = self.id_get(
+        cursor: AsyncCursor = self.id_get(
             column=Identifier("is_verified"),
             id=self.id
         )

@@ -5,15 +5,14 @@ Main file for API.
 from typing import Callable
 
 # Third Party Imports
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, FastAPI
 from fastapi.requests import Request
-from fastapi.middleware import Middleware
 from fastapi.security import OAuth2PasswordBearer
 
+from .db.database import Database
+from .internals.config import Config
 # Local Imports
 from .routes import *
-from .internals.config import Config
-from .db.database import Database
 
 
 def create_app(

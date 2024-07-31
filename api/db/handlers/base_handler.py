@@ -5,7 +5,7 @@ Contains the base handler.
 # Standard Library Imports
 
 # Third Party Imports
-from psycopg2.extras import DictConnection
+from psycopg import AsyncConnection
 
 # Local Imports
 
@@ -17,17 +17,17 @@ class BaseHandler:
     """
     Base handler.
     """
-    _connection: DictConnection
+    _connection: AsyncConnection
 
     def __init__(
             self,
-            connection: DictConnection
+            connection: AsyncConnection
     ) -> None:
         """
         Initialize BaseHandler.
 
         Args:
-            connection (DictConnection): Database connection.
+            connection (AsyncConnection): Database connection.
         """
         self._connection = connection
 
@@ -38,7 +38,7 @@ class BaseHandler:
         return f"<{self.__class__.__name__} {self.__dict__}>"
 
     @property
-    def connection(self) -> DictConnection:
+    def connection(self) -> AsyncConnection:
         """
         Get connection.
 

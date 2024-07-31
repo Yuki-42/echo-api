@@ -1,12 +1,12 @@
 """
 Contains the secure handler.
 """
-from psycopg2.extras import DictRow
-from psycopg2.sql import SQL
+
 
 # Standard Library Imports
 
 # Third Party Imports
+from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
