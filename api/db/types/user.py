@@ -12,9 +12,8 @@ from psycopg.sql import Identifier
 
 # Local Imports
 from .base_type import BaseType
-from ...models.user import User as PublicUser
 from ...models.private import PrivateUser
-from ...models.secure import Token, Device
+from ...models.user import Status, User as PublicUser
 
 # Constants
 __all__ = [
@@ -58,6 +57,7 @@ class User(BaseType):
             username=await self.get_username(),
             icon=await self.get_icon(),
             bio=await self.get_bio(),
+            status=await self.get_status(),
             last_online=await self.get_last_online(),
             is_online=await self.get_is_online(),
             is_banned=await self.get_is_banned(),
@@ -78,6 +78,7 @@ class User(BaseType):
             username=await self.get_username(),
             icon=await self.get_icon(),
             bio=await self.get_bio(),
+            status=await self.get_status(),
             last_online=await self.get_last_online(),
             is_online=await self.get_is_online(),
             is_banned=await self.get_is_banned(),
@@ -195,8 +196,10 @@ class User(BaseType):
         Returns:
             Icon: Icon.
         """
-        # Create new transaction
-        raise NotImplementedError("Icon not implemented.")  # TODO: Implement icon property
+
+        # Get icon
+        icon_id: UUID = await self.get_icon_id()
+        return await self.files.id_get(icon_id)
 
     async def get_bio(self) -> str:
         """
@@ -225,6 +228,39 @@ class User(BaseType):
         # Set bio
         await self.id_set(
             column=Identifier("bio"),
+            id=self.id,
+            value=value
+        )
+
+    async def get_status(self) -> Status:
+        """
+        Get status.
+
+        Returns:
+            Status: Status.
+        """
+        # Get status
+        row: DictRow = await self.id_get(
+            column=Identifier("status"),
+            id=self.id
+        )
+        return Status(
+            **row["status"]
+        )
+
+    async def set_status(
+            self,
+            value: Status
+    ) -> None:
+        """
+        Set status.
+
+        Args:
+            value (Status): Status.
+        """
+        # Set status
+        await self.id_set(
+            column=Identifier("status"),
             id=self.id,
             value=value
         )

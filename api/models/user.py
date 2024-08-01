@@ -37,7 +37,7 @@ class Status(BaseModel):
     Status model.
     """
     type: StatusType
-    message: str
+    text: str
 
 
 class User(BaseModel):
@@ -48,8 +48,8 @@ class User(BaseModel):
     created_at: datetime
     email: str
     username: str
-    icon: UUID
-    bio: Optional[str]
+    icon: Optional[UUID] = None
+    bio: Optional[str] = None
     status: Status
     last_online: datetime
     is_online: bool
