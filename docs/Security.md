@@ -35,8 +35,14 @@ can only be used on the device that it was stolen from. This is to prevent a tok
 
 The application uses HTTPS on all endpoints to secure traffic in transit between the client and the server. This is 
 considered the absolute minimum for security. In addition to this, the application makes use of end-to-end encryption 
-when sending messages directly between users. This makes use of a client-sided Diffie-Hellman key exchange to generate a
-shared secret between the two users.
+when sending messages directly between users. When a new DM is created between two users, each client generates a 
+public key and private key. These clients then complete a diffie-hellman key exchange to generate a shared secret.
 
-This shared secret is used to encrypt and decrypt messages inside the client. 
+This shared secret is calculated on each client individually and is never sent unencrypted to the server. Each user then 
+encrypts the shared secret using their password and sends it to the server. The server then stores the encrypted shared
+secret in the database in the user_channels table. 
+
+When a user logs in, they are sent all shared secrets for their DMs and decrypt them using their password. This shared
+secret is then used to encrypt and decrypt messages between the two users. This ensures that even if the server is
+compromised, the messages are still secure.
 
