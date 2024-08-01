@@ -1,6 +1,7 @@
 """
 Contains the secure handler.
 """
+from uuid import UUID
 
 # Standard Library Imports
 
@@ -54,14 +55,14 @@ class SecureHandler(BaseHandler):
 
     async def set_password(
             self,
-            user_id: str,
+            user_id: UUID,
             password: str
     ) -> None:
         """
         Sets a user's password.
 
         Args:
-            user_id (str): User ID.
+            user_id (UUID): User ID.
             password (str): Password.
         """
 
@@ -70,7 +71,7 @@ class SecureHandler(BaseHandler):
 
         # Get cursor
         cursor: AsyncCursor
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             # Remove old password
             await cursor.execute(
                 SQL(
@@ -91,3 +92,17 @@ class SecureHandler(BaseHandler):
                     password,
                 ]
             )
+
+    async def get_password(
+            self,
+            user_id: UUID
+    ) -> str:
+        """
+        Gets the hash of a user's password from the database.
+
+        Args:
+            user_id (UUID): User ID.
+
+        Returns:
+            str: Hashed password.
+        """

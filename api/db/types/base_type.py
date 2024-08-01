@@ -10,7 +10,6 @@ from uuid import UUID
 from psycopg import AsyncConnection, AsyncCursor
 from psycopg.rows import DictRow
 from psycopg.sql import Identifier, SQL
-from psycopg.cursor import Cursor
 
 # Local Imports
 
@@ -43,7 +42,7 @@ class BaseType:
         self._connection = connection
 
         # Set attributes
-        self.id = UUID(row["id"])
+        self.id = row["id"]
         self.created_at = row["created_at"]
 
     def __repr__(self) -> str:
@@ -70,7 +69,7 @@ class BaseType:
             self,
             column: Identifier,
             id: any
-    ) -> AsyncCursor:
+    ) -> DictRow:
         """
         Gets a the value present in a column from the database using the current object's ID.
 
@@ -81,11 +80,19 @@ class BaseType:
         Returns:
             cursor (DictCursor): Cursor.
         """
-        return await self.get(
+        cursor: AsyncCursor = await self.get(
             column=column,
             key=Identifier("id"),
             key_value=id
         )
+
+        # Get the row
+        row: DictRow = await cursor.fetchone()
+
+        # Close cursor
+        await cursor.close()
+
+        return row
 
     async def get(
             self,
@@ -106,7 +113,7 @@ class BaseType:
         """
         # Get cursor
         cursor: AsyncCursor
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
                     r"SELECT {column} FROM {table} WHERE {key} = %s;"
@@ -166,7 +173,7 @@ class BaseType:
             None
         """
         cursor: AsyncCursor
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
                     r"UPDATE {table} SET {column} = %s WHERE {key} = %s;"
@@ -180,3 +187,23 @@ class BaseType:
                     key_value
                 ]
             )
+
+    """
+    External handler methods
+    """
+
+    @property
+    def users(self):  # This is a great example of how to use a property to create a handler. (I think)
+        """
+        Get users handler.
+        """
+        from ..handlers.user_handler import UsersHandler
+        return UsersHandler(self.connection)
+
+    @property
+    def secure(self):
+        """
+        Get secure handler.
+        """
+        from ..handlers.secure_handler import SecureHandler
+        return SecureHandler(self.connection)

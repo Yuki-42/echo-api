@@ -2,6 +2,7 @@
 Main file for API.
 """
 # Standard Library Imports
+from asyncio import get_event_loop, get_running_loop
 from typing import Callable
 
 # Third Party Imports
@@ -9,9 +10,9 @@ from fastapi import APIRouter, FastAPI
 from fastapi.requests import Request
 from fastapi.security import OAuth2PasswordBearer
 
+# Local Imports
 from .db.database import Database
 from .internals.config import Config
-# Local Imports
 from .routes import *
 
 
@@ -24,10 +25,6 @@ def create_app(
     """
     # Create FastAPI instance
     api: FastAPI = FastAPI()
-
-    # Create required services
-    config: Config = Config()
-    database: Database = Database(config)
 
     # Register routes
     api.include_router(api_router)
@@ -43,33 +40,33 @@ def create_app(
         for middleware_item in middleware:
             api.add_middleware(middleware_item)
 
-    @api.middleware("http")
-    async def db_session_middleware(
-            request: Request,
-            call_next: Callable
-    ) -> None:
-        """
-        Middleware to add database connection to request state.
-
-        Args:
-            request (Request): Request object.
-            call_next (Callable): Next function to call.
-        """
-        request.state.db = database
-        response = await call_next(request)
-        return response
-
-    @api.on_event("shutdown")
-    async def shutdown_event() -> None:
-        """
-        Shutdown event.
-        """
-        await database.close()
-
     # Set token url
     ouath2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
     return api
 
 
+# Create app
 app: FastAPI = create_app()
+
+
+@app.middleware("http")
+async def db_session_middleware(
+        request: Request,
+        call_next: Callable
+) -> None:
+    """
+    Middleware to add database connection to request state.
+
+    Args:
+        request (Request): Request object.
+        call_next (Callable): Next function to call.
+    """
+    # Create required services
+    config: Config = Config()
+    database: Database = await Database.new(config)
+
+    request.state.db = database
+    response = await call_next(request)
+    return response
+

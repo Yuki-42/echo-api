@@ -29,7 +29,7 @@ class BaseHandler:
         Args:
             connection (AsyncConnection): Database connection.
         """
-        self._connection = connection
+        self.connection = connection
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.__dict__}>"
@@ -41,8 +41,8 @@ class BaseHandler:
         """
         Close connection.
         """
-        self._connection.close()
-        self._connection = None
+        self.connection.close()
+        self.connection = None
 
     @property
     def users(self):  # This is a great example of how to use a property to create a handler. (I think)

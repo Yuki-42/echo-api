@@ -94,15 +94,10 @@ class User(BaseType):
             str: Email.
         """
         # Get email
-        with self.id_get(
-                column=Identifier("email"),
-                id=str(self.id)
-        ) as cursor:
-            cursor: AsyncCursor
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
-        # Return email
+        row: DictRow = await self.id_get(
+            column=Identifier("email"),
+            id=str(self.id)
+        )
         return row["email"]
 
     async def set_email(
@@ -132,16 +127,11 @@ class User(BaseType):
         Returns:
             str: Username.
         """
-        # Get get_username
-        with self.id_get(
-                column=Identifier("username"),
-                id=str(self.id)
-        ) as cursor:
-            cursor: AsyncCursor
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
-        # Return username
+        # Get username
+        row: DictRow = await self.id_get(
+            column=Identifier("username"),
+            id=str(self.id)
+        )
         return row["username"]
 
     async def set_username(
@@ -157,7 +147,7 @@ class User(BaseType):
         Returns:
             None
         """
-        # Set get_username
+        # Set username
         await self.id_set(
             column=Identifier("username"),
             id=str(self.id),
@@ -172,18 +162,11 @@ class User(BaseType):
             UUID: Icon.
         """
         # Get icon
-        with await self.id_get(
-                column=Identifier("icon"),
-                id=str(self.id)
-        ) as cursor:
-            cursor: AsyncCursor
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
-        # Get icon
-        icon: UUID = row["icon"]
-        print(f"Icon type: {type(icon)}")
-        return icon  # TODO: Ensure that this is an actual UUID
+        row: DictRow = await self.id_get(
+            column=Identifier("icon"),
+            id=str(self.id)
+        )
+        return row["icon"]
 
     async def set_icon_id(
             self,
@@ -223,15 +206,10 @@ class User(BaseType):
             str: Bio.
         """
         # Get bio
-        with await self.id_get(
-                column=Identifier("bio"),
-                id=self.id
-        ) as cursor:
-            cursor: AsyncCursor
-
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
+        row: DictRow = await self.id_get(
+            column=Identifier("bio"),
+            id=self.id
+        )
         return row["bio"]
 
     async def set_bio(
@@ -259,15 +237,11 @@ class User(BaseType):
             datetime: Last online.
         """
         # Get last_online
-        with await self.id_get(
-                column=Identifier("last_online"),
-                id=self.id
-        ) as cursor:
-            cursor: AsyncCursor
-
-            # Get row
-            row: DictRow = await cursor.fetchone()
-        return row["last_online"]  # Skip datetime conversion here because postgresql is based
+        row: DictRow = await self.id_get(
+            column=Identifier("last_online"),
+            id=self.id
+        )
+        return row["last_online"]
 
     async def set_last_online(
             self,
@@ -294,15 +268,10 @@ class User(BaseType):
             bool: Online status.
         """
         # Get is_online
-        with await self.id_get(
-                column=Identifier("is_online"),
-                id=self.id
-        ) as cursor:
-            cursor: AsyncCursor
-
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
+        row: DictRow = await self.id_get(
+            column=Identifier("is_online"),
+            id=self.id
+        )
         return row["is_online"]
 
     async def set_is_online(
@@ -329,16 +298,10 @@ class User(BaseType):
         Returns:
             bool: Ban status.
         """
-        # Get is_banned
-        with self.id_get(
-                column=Identifier("is_banned"),
-                id=self.id
-        ) as cursor:
-            cursor: AsyncCursor
-
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
+        row: DictRow = await self.id_get(
+            column=Identifier("is_banned"),
+            id=self.id
+        )
         return row["is_banned"]
 
     async def set_is_banned(
@@ -366,15 +329,10 @@ class User(BaseType):
             bool: Verified status.
         """
         # Get is_verified
-        with self.id_get(
-                column=Identifier("is_verified"),
-                id=self.id
-        ) as cursor:
-            cursor: AsyncCursor
-
-            # Get row
-            row: DictRow = await cursor.fetchone()
-
+        row: DictRow = await self.id_get(
+            column=Identifier("is_verified"),
+            id=self.id
+        )
         return row["is_verified"]
 
     async def set_is_verified(self, value: bool) -> None:
@@ -399,7 +357,7 @@ class User(BaseType):
             list: Tokens.
         """
         # Get tokens
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor: AsyncCursor
 
             # Get tokens
@@ -412,7 +370,7 @@ class User(BaseType):
 
         # Get devices
         for token in token_data:
-            with self.connection.cursor() as cursor:
+            async with self.connection.cursor() as cursor:
                 cursor: AsyncCursor
 
                 # Get device
@@ -460,7 +418,7 @@ class User(BaseType):
             datetime: Password last updated.
         """
         # Create cursor
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor: AsyncCursor
 
             # Get last updated

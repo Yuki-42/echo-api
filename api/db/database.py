@@ -6,8 +6,8 @@ Contains database connection information and shared handlers.
 from typing import Type
 
 # Third Party Imports
-from psycopg import connect, AsyncConnection
-from psycopg.rows import DictRow
+from psycopg import AsyncCursor, connect, AsyncConnection
+from psycopg.rows import dict_row
 
 # Local Imports
 from .handlers import *
@@ -33,15 +33,17 @@ class Database:
     users: UsersHandler
     secure: SecureHandler
 
-    def __init__(
-            self,
+    @classmethod
+    async def new(
+            cls,
             config: Config
-    ) -> None:
+    ) -> "Database":
+        self = cls()
         self.config = config
 
         # Connect handlers
-        self.users = UsersHandler(self._new_connection())
-        self.secure = SecureHandler(self._new_connection())
+        self.users = UsersHandler(await self._new_connection())
+        self.secure = SecureHandler(await self._new_connection())
 
         # Add handlers to list
         self.handlers = [
@@ -49,22 +51,25 @@ class Database:
             self.secure
         ]
 
-    def _new_connection(self) -> AsyncConnection:
+        return self
+
+    async def _new_connection(self) -> AsyncConnection:
         """
         Create a new database connection.
 
         Returns:
             DictConnection: Database connection.
         """
-        connection: AsyncConnection = connect(
+        connection: AsyncConnection = await AsyncConnection.connect(
             dbname=self.config.db.name,
             user=self.config.db.user,
             password=self.config.db.password,
             host=self.config.db.host,
             port=self.config.db.port,
-            row_factory=DictRow
+            row_factory=dict_row
         )
-        connection.autocommit = True
+        await connection.set_autocommit(True)
+        assert type(connection) is AsyncConnection
         return connection
 
     async def close(self) -> None:
@@ -73,9 +78,3 @@ class Database:
         """
         for handler in self.handlers:
             handler.close()
-
-    def __del__(self) -> None:
-        """
-        Close all handlers.
-        """
-        self.close()

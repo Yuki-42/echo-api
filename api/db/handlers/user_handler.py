@@ -73,19 +73,19 @@ class UsersHandler(BaseHandler):
         Returns:
             User: User.
         """
+        cursor: AsyncCursor
         # Create a cursor
-        cursor: AsyncCursor = self.connection.cursor()
-
-        # Execute
-        await cursor.execute(
-            SQL(
-                r"SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
-            ),
-            [
-                email
-            ]
-        )
-        row: DictRow = await cursor.fetchone()
+        async with self.connection.cursor() as cursor:
+            # Execute
+            await cursor.execute(
+                SQL(
+                    r"SELECT id, created_at FROM users WHERE email = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
+                ),
+                [
+                    email
+                ]
+            )
+            row: DictRow = await cursor.fetchone()
 
         # Kill the cursor
         await cursor.close()
@@ -128,7 +128,7 @@ class UsersHandler(BaseHandler):
         tag = int(str(tag)[:6])
 
         # Check if the tag is already in use
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor: AsyncCursor
             while True:
                 await cursor.execute(
@@ -150,7 +150,7 @@ class UsersHandler(BaseHandler):
                     break
 
         # Execute
-        with self.connection.cursor() as cursor:
+        async with self.connection.cursor() as cursor:
             cursor: AsyncCursor
             await cursor.execute(
                 SQL(
