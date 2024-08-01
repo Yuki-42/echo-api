@@ -80,18 +80,11 @@ class BaseType:
         Returns:
             cursor (DictCursor): Cursor.
         """
-        cursor: AsyncCursor = await self.get(
+        row: DictRow = await self.get(
             column=column,
             key=Identifier("id"),
             key_value=id
         )
-
-        # Get the row
-        row: DictRow = await cursor.fetchone()
-
-        # Close cursor
-        await cursor.close()
-
         return row
 
     async def get(
@@ -99,7 +92,7 @@ class BaseType:
             column: Identifier,
             key: Identifier,
             key_value: any
-    ) -> AsyncCursor:
+    ) -> DictRow:
         """
         Gets the value of a column from the database.
 
@@ -109,7 +102,7 @@ class BaseType:
             key_value (any): Key column value.
 
         Returns:
-            cursor (DictCursor): Cursor.
+            cursor (DictRow): Cursor.
         """
         # Get cursor
         cursor: AsyncCursor
@@ -127,7 +120,10 @@ class BaseType:
                 ]
             )
 
-            return cursor
+            # Get the row
+            row: DictRow = await cursor.fetchone()
+
+        return row
 
     async def id_set(
             self,

@@ -82,7 +82,7 @@ class User(BaseType):
             is_online=await self.get_is_online(),
             is_banned=await self.get_is_banned(),
             is_verified=await self.get_is_verified(),
-            tokens=await self.get_tokens(),
+            tokens=await self.secure.get_tokens(user_id=self.id),
             password_last_updated=await self.get_password_last_updated()
         )
 
@@ -348,67 +348,6 @@ class User(BaseType):
             id=self.id,
             value=value
         )
-
-    async def get_tokens(self) -> list[Token]:
-        """
-        Get tokens.
-
-        Returns:
-            list: Tokens.
-        """
-        # Get tokens
-        async with self.connection.cursor() as cursor:
-            cursor: AsyncCursor
-
-            # Get tokens
-            await cursor.execute(
-                "SELECT * FROM secured.tokens WHERE user_id = %s;",
-                [str(self.id)]
-            )
-
-            token_data: list[DictRow] = await cursor.fetchall()
-
-        # Get devices
-        for token in token_data:
-            async with self.connection.cursor() as cursor:
-                cursor: AsyncCursor
-
-                # Get device
-                await cursor.execute(
-                    "SELECT * FROM secured.devices WHERE id = %s;",
-                    [token["device_id"]]
-                )
-                device_data: DictRow = await cursor.fetchone()
-                token["device"] = Device(
-                    id=device_data["id"],
-                    created_at=datetime.strptime(device_data["created_at"], "%Y-%m-%d %H:%M:%S.%f"),
-                    name=device_data["name"],
-                    ip=device_data["ip"],
-                    mac=device_data["mac"],
-                    lang=device_data["lang"],
-                    os=device_data["os"],
-                    screen_size=device_data["screen_size"],
-                    country=device_data["country"]
-                )
-
-        return [
-            Token(
-                user=self,
-                device=Device(
-                    id=UUID(token["device_id"]),
-                    created_at=datetime.strptime(token["created_at"], "%Y-%m-%d %H:%M:%S.%f"),
-                    name=token["name"],
-                    ip=token["ip"],
-                    mac=token["mac"],
-                    lang=token["lang"],
-                    os=token["os"],
-                    screen_size=token["screen_size"],
-                    country=token["country"]
-                ),
-                token=token["token"],
-                last_used=datetime.strptime(token["last_used"], "%Y-%m-%d %H:%M:%S.%f")
-            ) for token in token_data
-        ]
 
     async def get_password_last_updated(self) -> datetime:
         """

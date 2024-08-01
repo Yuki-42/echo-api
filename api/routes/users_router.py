@@ -57,7 +57,7 @@ async def read_users(
     return await user.to_public()
 
 
-@users_router.post("/", tags=["users"])
+@users_router.post("/", tags=["users"], responses={409: {"description": "User already exists"}})
 async def create_user(
         data: CreateUserData,
         request: Request
