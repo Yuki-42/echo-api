@@ -12,6 +12,7 @@ from psycopg.rows import DictRow
 from psycopg.sql import Identifier, SQL
 
 # Local Imports
+from ..base_db_interactor import BaseDbInteractor
 
 # Constants
 __all__ = [
@@ -19,14 +20,13 @@ __all__ = [
 ]
 
 
-class BaseType:
+class BaseType(BaseDbInteractor):
     """
     Base DB type.
 
     Provides the connection attribute.
     """
     _table_name: Identifier
-    _connection: AsyncConnection
 
     id: UUID
     created_at: datetime
@@ -39,31 +39,12 @@ class BaseType:
         """
         Initialize BaseType.
         """
-        self._connection = connection
+        # Initialize BaseDbInteractor
+        super(BaseType, self).__init__(connection)
 
         # Set attributes
         self.id = row["id"]
         self.created_at = row["created_at"]
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    def __str__(self) -> str:
-        return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    @property
-    def connection(self) -> AsyncConnection:
-        """
-        Get connection.
-
-        Returns:
-            DictConnection: Database connection.
-        """
-
-        if not self._connection:
-            raise AttributeError("Connection not set.")
-
-        return self._connection
 
     async def id_get(
             self,
@@ -183,23 +164,3 @@ class BaseType:
                     key_value
                 ]
             )
-
-    """
-    External handler methods
-    """
-
-    @property
-    def users(self):  # This is a great example of how to use a property to create a handler. (I think)
-        """
-        Get users handler.
-        """
-        from ..handlers.user_handler import UsersHandler
-        return UsersHandler(self.connection)
-
-    @property
-    def secure(self):
-        """
-        Get secure handler.
-        """
-        from ..handlers.secure_handler import SecureHandler
-        return SecureHandler(self.connection)
