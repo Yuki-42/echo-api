@@ -2,9 +2,16 @@
 Tool to convert checkbox permissions to permissions integer.
 """
 
+# Standard Library Imports
 from tkinter import Tk, Variable, ttk, BooleanVar
 from tkinter.ttk import Frame, Notebook
 
+
+# Third Party Imports
+
+# Local Imports
+
+# Constants
 
 def code_from_list(permissions: list[bool]) -> int:
     """

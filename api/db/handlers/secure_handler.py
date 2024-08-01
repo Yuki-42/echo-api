@@ -1,9 +1,9 @@
 """
 Contains the secure handler.
 """
-from uuid import UUID
 
 # Standard Library Imports
+from uuid import UUID
 
 # Third Party Imports
 from psycopg import AsyncCursor

@@ -2,9 +2,9 @@
 Contains application configuration interface.
 """
 # Standard Library Imports
+from pathlib import Path
 from secrets import SystemRandom
 from warnings import warn
-from pathlib import Path
 
 # Third Party Imports
 from dynaconf import Dynaconf
@@ -13,7 +13,8 @@ from dynaconf import Dynaconf
 
 # Constants
 __all__ = [
-    "Config"
+    "Config",
+    "CONFIG"
 ]
 
 # Check if there is a secrets file

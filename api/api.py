@@ -2,7 +2,6 @@
 Main file for API.
 """
 # Standard Library Imports
-from asyncio import get_event_loop, get_running_loop
 from typing import Callable
 
 # Third Party Imports
