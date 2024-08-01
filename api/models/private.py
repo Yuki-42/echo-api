@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 # Local Imports
 from .user import User
-from .secure import Token, Password
+from .secure import Token
 
 # Constants
 __all__ = [
@@ -23,4 +23,3 @@ class PrivateUser(User):
     Private user model.
     """
     tokens: list[Token]
-    password: Password
