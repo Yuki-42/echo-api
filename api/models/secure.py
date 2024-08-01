@@ -48,5 +48,5 @@ class Password(BaseModel):
     """
     Password model.
     """
-    password: str
+    hash: str
     last_updated: datetime

@@ -18,6 +18,13 @@ The token is generated using the `PyJWT` library. The data encoded in the token 
 }
 ```
 
+Upon initial user registration, they are granted a temporary token that is used to authenticate the user for adding a 
+device to their account. This token is generated using the same method as the login token, but with a shorter expiry time
+of 5 minutes. This token is used to authenticate the user when adding a device to their account.
+
+If the user does not add a device to their account within the 5 minutes, they will need to log in again to get a new
+token.
+
 The user_id is the id of the user that is logged in and the device_id is the id of the device that the user is logged in
 on. The token is set to expire after 1 week.
 
@@ -32,3 +39,4 @@ when sending messages directly between users. This makes use of a client-sided D
 shared secret between the two users.
 
 This shared secret is used to encrypt and decrypt messages inside the client. 
+

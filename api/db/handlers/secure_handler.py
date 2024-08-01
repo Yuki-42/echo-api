@@ -125,7 +125,7 @@ class SecureHandler(BaseHandler):
             return None
 
         return Password(
-            password=row["password"],
+            hash=row["password"],
             last_updated=row["last_updated"]
         )
 
@@ -161,6 +161,20 @@ class SecureHandler(BaseHandler):
             screen_size=row["screen_size"],
             country=row["country"]
         )
+
+    async def new_token(
+            self,
+            user_id: UUID
+    ) -> Token:
+        """
+        Build a new authentication token. This will also create a new device if the device does not exist.
+
+        Args:
+            user_id :
+
+        Returns:
+
+        """
 
     async def get_tokens(
             self,

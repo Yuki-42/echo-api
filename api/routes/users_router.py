@@ -9,12 +9,15 @@ from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from pydantic import BaseModel
+from jwt import PyJWT
 
 # Local Imports
+from ..security.scheme import encode_access_token
 from ..db.database import Database
 from ..db.types.user import User
-from ..models.user import User as UserModel
 from ..models.private import PrivateUser as PrivateUserModel
+from ..models.secure import Password, Token
+from ..models.user import User as UserModel
 
 # Constants
 __all__ = [
@@ -33,6 +36,14 @@ class CreateUserData(BaseModel):
     Create user data model.
     """
     username: str
+    email: str
+    password: str
+
+
+class LoginUserData(BaseModel):
+    """
+    Login user data model.
+    """
     email: str
     password: str
 
@@ -84,9 +95,9 @@ async def create_user(
 async def login_user(
         data: CreateUserData,
         request: Request
-) -> PrivateUserModel:
+) -> PyJWT:
     """
-    Logs in a user.
+    Creates a new auth token for the user.
     """
     # Get database connection
     db: Database = request.state.db
@@ -97,8 +108,12 @@ async def login_user(
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Get hashed password
+    password: Password = await db.secure.get_password(user.id)
+
     # Check password
-    if not db.secure.verify_password(data.password, data.password):
+    if not db.secure.verify_password(data.password, password.hash):
         raise HTTPException(status_code=403, detail="Incorrect password")
 
-    return await user.to_private()
+    # Build a new access token
+    token: Token = await db.secure.new_token(user.id)
