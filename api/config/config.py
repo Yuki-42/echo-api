@@ -10,6 +10,7 @@ from warnings import warn
 from dynaconf import Dynaconf
 
 # Local Imports
+from .models import *
 
 # Constants
 __all__ = [
@@ -33,6 +34,16 @@ default: &default
         password: "Developer.1"
     auth:
         secretKey: {SystemRandom().randint(0, 2 ** 256)}
+        
+    user_security:
+        # Passwords for users 
+        password_minimum_length: 10  
+        password_maximum_length: 1048576  # 1 MB assuming each character is 1 byte
+        password_require_uppercase: 1
+        password_require_lowercase: 2
+        password_require_number: 2
+        password_require_special_character: 2
+            
 development:
     <<: *default
 
@@ -60,6 +71,7 @@ class Config:
     __slots__ = [
         "db",
         "auth",
+        "user_security"
     ]
 
     def __init__(
@@ -68,49 +80,9 @@ class Config:
         """
         Initialises the Config object.
         """
-        self.db = self.Database()
-        self.auth = self.Auth()
-
-    class Auth:
-        """
-        Authentication configuration.
-        """
-        __slots__ = [
-            "secret_key",
-            "key_expires",
-            "key_size",
-        ]
-
-        def __init__(
-                self
-        ) -> None:
-            """
-            Initialises the Auth object.
-            """
-            self.secret_key = settings.auth.secret_key
-            self.key_expires = settings.auth.key_expires
-            self.key_size = settings.auth.key_size
-
-    class Database:
-        """
-        Database configuration.
-        """
-        __slots__ = [
-            "name",
-            "user",
-            "password",
-            "host",
-            "port"
-        ]
-
-        def __init__(
-                self
-        ) -> None:
-            self.name = settings.database.name
-            self.user = settings.database.user
-            self.host = settings.database.host
-            self.port = settings.database.port
-            self.password = settings.database.password
+        self.db = CfDatabase(settings)
+        self.auth = CfAuth(settings)
+        self.user_security = CfUserSecurity(settings)
 
 
 # Create the config object
