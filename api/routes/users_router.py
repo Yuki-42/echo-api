@@ -131,6 +131,54 @@ async def create_user(
     return await user.to_private()
 
 
+@users_router.put("/", tags=["users"])
+async def update_user(
+        data: CreateUserData,
+        request: Request
+) -> UserModel:
+    """
+    Updates a user.
+    """
+    # Get database connection
+    db: Database = request.state.db
+
+    # Check if the user exists
+    user: User = await db.users.email_get(data.email)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Update user
+    user = await db.users.update(user.id, data.email, data.username, data.password)
+
+    return await user.to_public()
+
+
+@users_router.delete("/", tags=["users"])
+async def delete_user(
+        data: CreateUserData,
+        request: Request
+) -> UserModel:
+    """
+    Deletes a user.
+    """
+    # Get database connection
+    db: Database = request.state.db
+
+    # Check the signature included in the request
+
+    # Check if the user exists
+    user: User = await db.users.email_get(data.email)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Delete user
+    user = await db.users.delete(user.id)
+
+    return await user.to_public()
+
+
 @users_router.post("/login", tags=["users"])
 async def login_user(
         data: CreateUserData,
@@ -157,3 +205,6 @@ async def login_user(
 
     # Build a new access token
     token: Token = await db.secure.new_token(user.id)
+
+    # Encode token
+    return token.encode()
