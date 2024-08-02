@@ -170,11 +170,12 @@ class SecureHandler(BaseHandler):
         Build a new authentication token. This will also create a new device if the device does not exist.
 
         Args:
-            user_id :
+            user_id (UUID): User ID.
 
         Returns:
-
+            Token: Token.
         """
+        raise NotImplemented("New token method not implemented yet.")
 
     async def get_tokens(
             self,
