@@ -46,3 +46,12 @@ When a user logs in, they are sent all shared secrets for their DMs and decrypt 
 secret is then used to encrypt and decrypt messages between the two users. This ensures that even if the server is
 compromised, the messages are still secure.
 
+## Server Administrators
+
+Server administrators have the ability to view all messages in guild channels, delete users, and delete messages. This
+is to ensure that the server is kept clean and that users are not abusing the system.
+
+The server administrator is authenticated using a signature that is stored in the server's environment variables, 
+similar to how SSH work. Each request to the server is signed using the server's secret key. The server then verifies
+the signature before processing the request. This is to ensure that only the server administrator can access the
+administrator endpoints.
