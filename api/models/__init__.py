@@ -8,8 +8,7 @@ Initialises the models package.
 
 # Local Imports
 from .file import File
-from .private import PrivateUser
-from .secure import Token, Device
+from .secure import Token, Device, PrivateUser
 from .user import User, StatusType, Status
 
 # Constants
