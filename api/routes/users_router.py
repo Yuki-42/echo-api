@@ -12,6 +12,7 @@ from jwt import PyJWT
 from pydantic import BaseModel
 
 # Local Imports
+from ..config.config import CONFIG
 from ..db.database import Database
 from ..db.types.user import User
 from ..models.private import PrivateUser as PrivateUserModel
@@ -67,7 +68,12 @@ async def read_users(
     return await user.to_public()
 
 
-@users_router.post("/", tags=["users"], responses={409: {"description": "User already exists"}})
+@users_router.post(
+    "/", tags=["users"], responses={
+        409: {"description": "User already exists"},
+        430: {"description": "Password does not meet requirements"}
+    }
+    )
 async def create_user(
         data: CreateUserData,
         request: Request
@@ -75,6 +81,41 @@ async def create_user(
     """
     Creates a new user.
     """
+    # Do user password checks before anything else to minimise in-flight time for password
+    if len(data.password) > CONFIG.user_security.password_maximum_length:
+        raise HTTPException(status_code=430, detail="Password too long")
+
+    if len(data.password) < CONFIG.user_security.password_minimum_length:
+        raise HTTPException(status_code=430, detail="Password too short")
+
+    # Count numbers of each character type
+    uppercase: int = 0
+    lowercase: int = 0
+    number: int = 0
+    special: int = 0
+
+    for char in data.password:
+        if char.isupper():
+            uppercase += 1
+        elif char.islower():
+            lowercase += 1
+        elif char.isdigit():
+            number += 1
+        else:
+            special += 1
+
+    if uppercase < CONFIG.user_security.password_require_uppercase:
+        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_uppercase} uppercase characters")
+
+    if lowercase < CONFIG.user_security.password_require_lowercase:
+        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_lowercase} lowercase characters")
+
+    if number < CONFIG.user_security.password_require_number:
+        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_number} number characters")
+
+    if special < CONFIG.user_security.password_require_special_character:
+        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_special_character} special characters")
+
     # Get database connection
     db: Database = request.state.db
 
