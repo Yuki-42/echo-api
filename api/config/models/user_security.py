@@ -34,7 +34,7 @@ class CfUserSecurity:
     ) -> None:
         self.password_minimum_length: str = settings.user_security.password_minimum_length
         self.password_maximum_length: str = settings.user_security.password_maximum_length
-        self.password_require_uppercase: int = settings.user_security.require_uppercase
-        self.password_require_lowercase: int = settings.user_security.require_lowercase
-        self.password_require_number: int = settings.user_security.require_number
-        self.password_require_special_character: int = settings.user_security.require_special_character
+        self.password_require_uppercase: int = settings.user_security.password_require_uppercase
+        self.password_require_lowercase: int = settings.user_security.password_require_lowercase
+        self.password_require_number: int = settings.user_security.password_require_number
+        self.password_require_special_character: int = settings.user_security.password_require_special_character
