@@ -15,8 +15,7 @@ from pydantic import BaseModel
 from ..config.config import CONFIG
 from ..db.database import Database
 from ..db.types.user import User
-from ..models.private import PrivateUser as PrivateUserModel
-from ..models.secure import Password, Token
+from ..models.secure import Password, Token, PrivateUser as PrivateUserModel
 from ..models.user import User as UserModel
 
 # Constants
@@ -73,7 +72,7 @@ async def read_users(
         409: {"description": "User already exists"},
         430: {"description": "Password does not meet requirements"}
     }
-    )
+)
 async def create_user(
         data: CreateUserData,
         request: Request
@@ -179,32 +178,33 @@ async def delete_user(
     return await user.to_public()
 
 
-@users_router.post("/login", tags=["users"])
-async def login_user(
-        data: CreateUserData,
-        request: Request
-) -> PyJWT:
-    """
-    Creates a new auth token for the user.
-    """
-    # Get database connection
-    db: Database = request.state.db
-
-    # Check if the user exists
-    user: User = await db.users.email_get(data.email)
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Get hashed password
-    password: Password = await db.secure.get_password(user.id)
-
-    # Check password
-    if not db.secure.verify_password(data.password, password.hash):
-        raise HTTPException(status_code=403, detail="Incorrect password")
-
-    # Build a new access token
-    token: Token = await db.secure.new_token(user.id)
-
-    # Encode token
-    return token.encode()
+# @users_router.post("/login", tags=["users"])
+# async def login_user(
+#         data: CreateUserData,
+#         request: Request
+# ) -> PyJWT:
+#     """
+#     Creates a new auth token for the user.
+#     """
+#     # Get database connection
+#     db: Database = request.state.db
+#
+#     # Check if the user exists
+#     user: User = await db.users.email_get(data.email)
+#
+#     if user is None:
+#         raise HTTPException(status_code=404, detail="User not found")
+#
+#     # Get hashed password
+#     password: Password = await db.secure.get_password(user.id)
+#
+#     # Check password
+#     if not db.secure.verify_password(data.password, password.hash):
+#         raise HTTPException(status_code=403, detail="Incorrect password")
+#
+#     # Build a new access token
+#     token: Token = await db.secure.new_token(user.id)
+#
+#     # Encode token
+#     return token.encode()
+#

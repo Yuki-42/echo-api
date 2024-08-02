@@ -13,7 +13,6 @@ from passlib.context import CryptContext
 from rsa import PrivateKey, PublicKey, newkeys
 
 # Local Imports
-from ..config.config import CONFIG
 
 # Constants
 __all__ = [
@@ -30,7 +29,8 @@ crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def encode_access_token(
         data: dict[str, any],
-        expires_delta: int = CONFIG.auth.key_expires
+        expires_delta: int,
+        secret_key: str
 ) -> PyJWT:
     """
     Encodes the provided data into a JWT token.
@@ -38,6 +38,7 @@ def encode_access_token(
     Args:
         data (dict[str, any]): The data to encode.
         expires_delta (int): The time in seconds for the token to expire.
+        secret_key (str): The secret key to encode the token with.
 
     Returns:
         PyJWT: The encoded token.
@@ -50,38 +51,45 @@ def encode_access_token(
     )
     return encode(
         to_encode,
-        CONFIG.auth.secret_key,
+        secret_key,
         algorithm="HS256"
     )
 
 
 def decode_access_token(
-        token: str
+        token: str,
+        secret_key: str
 ) -> dict[str, any]:
     """
     Decodes the provided token into a dictionary.
 
     Args:
         token (str): The token to decode.
+        secret_key (str): The secret key to decode the token with.
 
     Returns:
         dict[str, any]: The decoded token.
     """
     return decode(
         token,
-        CONFIG.auth.secret_key,
+        secret_key,
         algorithms=["HS256"]
     )
 
 
-def generate_keypair() -> tuple[PublicKey, PrivateKey]:
+def generate_keypair(
+        key_size: int
+) -> tuple[PublicKey, PrivateKey]:
     """
     Generates a public and private keypair for use with the API.
+
+    Args:
+        key_size (int): The size of the keypair.
 
     Returns:
         tuple[str, str]: The public and private keypair.
     """
-    if CONFIG.auth.key_size < 2048:
+    if key_size < 2048:
         warn("Key size is less than 2048 bits, which is not recommended for security.")
 
-    return newkeys(CONFIG.auth.key_size)
+    return newkeys(key_size)

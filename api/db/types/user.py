@@ -12,7 +12,7 @@ from psycopg.sql import Identifier
 
 # Local Imports
 from .base_type import BaseType
-from ...models.private import PrivateUser
+from ...models.secure import PrivateUser
 from ...models.user import Status, User as PublicUser
 
 # Constants

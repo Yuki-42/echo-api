@@ -9,7 +9,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # Local Imports
-from . import User
+from .user import User
 
 # Constants
 __all__ = [
@@ -50,3 +50,10 @@ class Password(BaseModel):
     """
     hash: str
     last_updated: datetime
+
+
+class PrivateUser(User):
+    """
+    Private user model.
+    """
+    tokens: list[Token]
