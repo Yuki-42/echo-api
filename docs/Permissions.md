@@ -15,7 +15,6 @@ There are three different permission types, each with their own set of bitmasks:
 
 ### Guild Permissions 
 
-
 | Permission      | Bit Number | Bit Position (HEX) | Description                                                                                 | OAuth Scope           |
 |-----------------|------------|--------------------|---------------------------------------------------------------------------------------------|-----------------------|
 | Administrator   | 31         | 8000 0000          | Allows the user to bypass all permissions checks                                            | guild:admin           |

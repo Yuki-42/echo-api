@@ -23,13 +23,13 @@ __all__ = [
 
 
 class StatusType(int, Enum):
-    online = 0
-    offline = 1
-    away = 2
-    dnd = 3
-    playing = 4
-    watching = 5
-    listening = 6
+    offline: int = 0
+    online: int = 1
+    away: int = 2
+    dnd: int = 3
+    playing: int = 4
+    watching: int = 5
+    listening: int = 6
 
 
 class Status(BaseModel):
@@ -37,7 +37,7 @@ class Status(BaseModel):
     Status model.
     """
     type: StatusType
-    message: Optional[str]
+    text: str
 
 
 class User(BaseModel):
@@ -48,8 +48,8 @@ class User(BaseModel):
     created_at: datetime
     email: str
     username: str
-    icon: UUID
-    bio: Optional[str]
+    icon: Optional[UUID] = None
+    bio: Optional[str] = None
     status: Status
     last_online: datetime
     is_online: bool

@@ -9,12 +9,13 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # Local Imports
-from . import User
+from .user import User
 
 # Constants
 __all__ = [
     "Device",
-    "Token"
+    "Token",
+    "Password",
 ]
 
 
@@ -41,3 +42,18 @@ class Token(BaseModel):
     device: Device
     token: str
     last_used: datetime
+
+
+class Password(BaseModel):
+    """
+    Password model.
+    """
+    hash: str
+    last_updated: datetime
+
+
+class PrivateUser(User):
+    """
+    Private user model.
+    """
+    tokens: list[Token]

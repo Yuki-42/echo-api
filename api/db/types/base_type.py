@@ -7,10 +7,12 @@ from datetime import datetime
 from uuid import UUID
 
 # Third Party Imports
-from psycopg2.extras import DictConnection, DictCursor, DictRow
-from psycopg2.sql import Identifier, SQL
+from psycopg import AsyncConnection, AsyncCursor
+from psycopg.rows import DictRow
+from psycopg.sql import Identifier, SQL
 
 # Local Imports
+from ..base_db_interactor import BaseDbInteractor
 
 # Constants
 __all__ = [
@@ -18,57 +20,37 @@ __all__ = [
 ]
 
 
-class BaseType:
+class BaseType(BaseDbInteractor):
     """
     Base DB type.
 
     Provides the connection attribute.
     """
     _table_name: Identifier
-    _connection: DictConnection
 
     id: UUID
     created_at: datetime
 
     def __init__(
             self,
-            connection: DictConnection,
+            connection: AsyncConnection,
             row: DictRow
     ) -> None:
         """
         Initialize BaseType.
         """
-        self._connection = connection
+        # Initialize BaseDbInteractor
+        super(BaseType, self).__init__(connection)
 
         # Set attributes
-        self.id = UUID(row["id"])
+        self.id = row["id"]
         self.created_at = row["created_at"]
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    def __str__(self) -> str:
-        return f"<{self.__class__.__name__} {self.__dict__}>"
-
-    @property
-    def connection(self) -> DictConnection:
-        """
-        Get connection.
-
-        Returns:
-            DictConnection: Database connection.
-        """
-
-        if not self._connection:
-            raise AttributeError("Connection not set.")
-
-        return self._connection
-
-    def id_get(
+    async def id_get(
             self,
             column: Identifier,
             id: any
-    ) -> DictCursor:
+    ) -> DictRow:
         """
         Gets a the value present in a column from the database using the current object's ID.
 
@@ -79,18 +61,19 @@ class BaseType:
         Returns:
             cursor (DictCursor): Cursor.
         """
-        return self.get(
+        row: DictRow = await self.get(
             column=column,
             key=Identifier("id"),
             key_value=id
         )
+        return row
 
-    def get(
+    async def get(
             self,
             column: Identifier,
             key: Identifier,
             key_value: any
-    ) -> DictCursor:
+    ) -> DictRow:
         """
         Gets the value of a column from the database.
 
@@ -100,25 +83,30 @@ class BaseType:
             key_value (any): Key column value.
 
         Returns:
-            cursor (DictCursor): Cursor.
+            cursor (DictRow): Cursor.
         """
-        cursor: DictCursor = self.connection.cursor()
-        cursor.execute(
-            SQL(
-                r"SELECT {column} FROM {table} WHERE {key} = %s;"
-            ).format(
-                column=column,
-                table=self._table_name,
-                key=key
-            ),
-            [
-                str(key_value),
-            ]
-        )
+        # Get cursor
+        cursor: AsyncCursor
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
+                SQL(
+                    r"SELECT {column} FROM {table} WHERE {key} = %s;"
+                ).format(
+                    column=column,
+                    table=self._table_name,
+                    key=key
+                ),
+                [
+                    str(key_value),
+                ]
+            )
 
-        return cursor
+            # Get the row
+            row: DictRow = await cursor.fetchone()
 
-    def id_set(
+        return row
+
+    async def id_set(
             self,
             column: Identifier,
             value: any,
@@ -135,14 +123,14 @@ class BaseType:
         Returns:
             None
         """
-        self.set(
+        await self.set(
             column=column,
             value=value,
             key=Identifier("id"),
             key_value=id
         )
 
-    def set(
+    async def set(
             self,
             column: Identifier,
             value: any,
@@ -161,8 +149,9 @@ class BaseType:
         Returns:
             None
         """
-        with self.connection.cursor() as cursor:
-            cursor.execute(
+        cursor: AsyncCursor
+        async with self.connection.cursor() as cursor:
+            await cursor.execute(
                 SQL(
                     r"UPDATE {table} SET {column} = %s WHERE {key} = %s;"
                 ).format(
@@ -170,5 +159,8 @@ class BaseType:
                     table=self._table_name,
                     key=key
                 ),
-                (value, key_value)
+                [
+                    value,
+                    key_value
+                ]
             )

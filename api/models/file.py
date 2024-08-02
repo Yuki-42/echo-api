@@ -10,7 +10,6 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # Local Imports
-from .user import User
 
 # Constants
 __all__ = [
@@ -24,4 +23,4 @@ class File(BaseModel):
     """
     id: UUID
     created_at: datetime
-    created_by: User
+    created_by: UUID

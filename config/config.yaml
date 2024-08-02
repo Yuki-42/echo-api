@@ -1,0 +1,27 @@
+# Default config file for the echo server
+default: &default
+    server:
+
+    logging:
+
+    database:
+        name: echo
+        user: echo
+        host: server
+        port: 5432
+
+    auth:
+        key_expires: 604800  # 1 week
+        key_size: 8192  # Big key size for good message security
+
+    user_security:
+        # Passwords for users
+        password_minimum_length: 10
+        password_maximum_length: 1048576  # 1 MB assuming each character is 1 byte
+        password_require_uppercase: 1
+        password_require_lowercase: 2
+        password_require_number: 2
+        password_require_special_character: 2
+
+development:
+    <<: *default
