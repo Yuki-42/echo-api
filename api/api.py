@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 # Local Imports
 from .db.database import Database
-from .internals.config import Config
+from .config.config import Config
 from .routes import *
 
 

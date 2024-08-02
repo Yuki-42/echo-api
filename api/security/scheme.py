@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 from rsa import PrivateKey, PublicKey, newkeys
 
 # Local Imports
-from ..internals.config import CONFIG
+from ..config.config import CONFIG
 
 # Constants
 __all__ = [

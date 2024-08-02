@@ -12,7 +12,7 @@ from psycopg.rows import dict_row
 # Local Imports
 from .handlers import *
 from .handlers.secure_handler import SecureHandler
-from ..internals.config import Config
+from ..config.config import Config
 
 # Constants
 __all__ = [
