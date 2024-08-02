@@ -3,7 +3,6 @@ Contains internal file datatype.
 """
 
 # Standard Library Imports
-from datetime import datetime
 from uuid import UUID
 
 # Third Party Imports

@@ -7,10 +7,10 @@ Initialises the models package.
 # Third Party Imports
 
 # Local Imports
-from .user import User, StatusType, Status
-from .secure import Token, Device
-from .private import PrivateUser
 from .file import File
+from .private import PrivateUser
+from .secure import Token, Device
+from .user import User, StatusType, Status
 
 # Constants
 __all__ = [

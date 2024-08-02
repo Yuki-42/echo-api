@@ -5,7 +5,6 @@ Contains the base handler.
 # Standard Library Imports
 
 # Third Party Imports
-from psycopg import AsyncConnection
 
 # Local Imports
 from ..base_db_interactor import BaseDbInteractor

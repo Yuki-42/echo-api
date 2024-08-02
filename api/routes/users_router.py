@@ -8,11 +8,10 @@ Contains the user routes.
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-from pydantic import BaseModel
 from jwt import PyJWT
+from pydantic import BaseModel
 
 # Local Imports
-from ..security.scheme import encode_access_token
 from ..db.database import Database
 from ..db.types.user import User
 from ..models.private import PrivateUser as PrivateUserModel
