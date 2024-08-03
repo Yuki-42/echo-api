@@ -3,7 +3,7 @@ Contains all tests for the HTTPS API endpoint for users.
 """
 
 # Standard Library Imports
-from unittest import TestCase
+from unittest import TestCase, IsolatedAsyncioTestCase
 from httpx import Response
 
 # Third Party Imports
@@ -15,7 +15,7 @@ from api.api import app
 # Constants
 
 
-class TestUsers(TestCase):
+class TestUsers(IsolatedAsyncioTestCase):
     """
     Test the HTTPS API endpoint for users.
     """
