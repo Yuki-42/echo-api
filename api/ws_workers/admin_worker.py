@@ -8,6 +8,7 @@ Contains the WS Admin Worker.
 from fastapi import WebSocket
 
 # Local Imports
+from ..db import Database
 
 # Constants
 __all__ = [
@@ -20,25 +21,26 @@ class AdminWorker:
     Worker to handle admin WebSocket connections.
     """
     connection: WebSocket
+    database: Database
 
     def __init__(
             self,
-            connection: WebSocket
+            connection: WebSocket,
+            database: Database
     ) -> None:
         """
         Initialise the worker.
 
         Args:
             connection (WebSocket): WebSocket connection.
+            database (Database): Database connection.
         """
         self.connection = connection
+        self.database = database
 
-        # Begin the processor loop
-        self.processor()
-
-    async def processor(self) -> None:
+    async def run(self) -> None:
         """
-        Processor loop.
+        Run the worker.
         """
         while True:
             data: dict = await self.connection.receive_json()
@@ -65,3 +67,16 @@ class AdminWorker:
                     await self.connection.send_json(
                         {"error": "Invalid action."}
                     )
+
+    async def _get_users(self) -> None:
+        """
+        Get users.
+        """
+        pass
+
+    async def _delete_user(self) -> None:
+        """
+        Delete a user.
+        """
+        pass
+
