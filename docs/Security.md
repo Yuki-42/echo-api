@@ -52,6 +52,12 @@ Server administrators have the ability to view all messages in guild channels, d
 is to ensure that the server is kept clean and that users are not abusing the system.
 
 The server administrator is authenticated using a signature that is stored in the server's environment variables, 
-similar to how SSH work. Each request to the server is signed using the server's secret key. The server then verifies
-the signature before processing the request. This is to ensure that only the server administrator can access the
-administrator endpoints.
+similar to how SSH works. A server administrator handshake is conducted when the someone tries to connect to the 
+administrator websocket endpoint.
+
+The handshake works as follows:
+1. The server generates a random list of 32 bytes, encrypts it using the server's public key, and sends it to the client.
+2. The client decrypts the message using the server's private key and calculates the MD5 hash of the message.
+3. The client then encrypts the MD5 hash using the server's public key and sends it back to the server. (not encrypted)
+4. The server then calculates the MD5 hash of the original message and compares it to the hash sent by the client. If
+they match, the client is authenticated as a server administrator.
