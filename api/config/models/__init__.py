@@ -10,10 +10,12 @@ Initializes the models package
 from .auth import CfAuth
 from .database import CfDatabase
 from .user_security import CfUserSecurity
+from .server import CfServer
 
 # Constants
 __all__ = [
     "CfDatabase",
     "CfUserSecurity",
     "CfAuth",
+    "CfServer",
 ]

@@ -83,7 +83,8 @@ class Config:
     __slots__ = [
         "db",
         "auth",
-        "user_security"
+        "user_security",
+        "server"
     ]
 
     def __init__(
@@ -95,6 +96,7 @@ class Config:
         self.db = CfDatabase(settings)
         self.auth = CfAuth(settings)
         self.user_security = CfUserSecurity(settings)
+        self.server = CfServer(settings)
 
 
 # Create the config object
