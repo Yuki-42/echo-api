@@ -7,24 +7,33 @@ from typing import Type
 
 # Third Party Imports
 from psycopg import AsyncConnection
+from psycopg_pool import AsyncConnectionPool
 from psycopg.rows import dict_row
 
 # Local Imports
 from .handlers import *
 from .handlers.secure_handler import SecureHandler
-from ..config.config import Config
+from ..config.config import CONFIG
 
 # Constants
 __all__ = [
     "Database"
 ]
 
+# Create connection pool for database
+connection_pool = AsyncConnectionPool(
+    conninfo=f"dbname={CONFIG.db.name} user={CONFIG.db.user} password={CONFIG.db.password} host={CONFIG.db.host} port={CONFIG.db.port}",
+    open=True,
+    min_size=4,
+    max_size=10,
+    timeout=10,
+)
+
 
 class Database:
     """
     Database connection group.
     """
-    config: Config
 
     # List of running handlers
     handlers: list[Type[any]]  # TODO: Get correct typing for this
@@ -35,11 +44,9 @@ class Database:
 
     @classmethod
     async def new(
-            cls,
-            config: Config
+            cls
     ) -> "Database":
         self = cls()
-        self.config = config
 
         # Connect handlers
         self.users = UsersHandler(await self._new_connection())
@@ -53,19 +60,15 @@ class Database:
 
         return self
 
-    async def _new_connection(self) -> AsyncConnection:
+    @staticmethod
+    async def _new_connection() -> AsyncConnection:
         """
         Create a new database connection.
 
         Returns:
             DictConnection: Database connection.
         """
-        connection: AsyncConnection = await AsyncConnection.connect(
-            dbname=self.config.db.name,
-            user=self.config.db.user,
-            password=self.config.db.password,
-            host=self.config.db.host,
-            port=self.config.db.port,
+        connection = await connection_pool.connection(
             row_factory=dict_row
         )
         await connection.set_autocommit(True)
@@ -74,7 +77,8 @@ class Database:
 
     async def close(self) -> None:
         """
-        Close all handlers.
+        Close the database connection.
         """
         for handler in self.handlers:
-            handler.close()
+            await handler.close()
+

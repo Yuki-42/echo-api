@@ -4,11 +4,11 @@ Contains the admin WS test endpoints.
 
 # Standard Library Imports
 from hashlib import md5
-from rsa import decrypt
-from unittest import IsolatedAsyncioTestCase, TestCase
+from unittest import IsolatedAsyncioTestCase
 
 # Third Party Imports
 from fastapi.testclient import TestClient
+from rsa import decrypt
 from starlette.testclient import WebSocketTestSession
 
 # Local Imports

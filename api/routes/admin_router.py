@@ -6,7 +6,7 @@ from hashlib import md5
 from secrets import token_bytes
 
 # Third Party Imports
-from fastapi import APIRouter, WebSocket, Request
+from fastapi import APIRouter, WebSocket
 from rsa import encrypt
 
 # Local Imports
@@ -48,7 +48,7 @@ async def admin_ws(
     client_expected: bytes = md5(token).digest()
 
     # Receive the token back from the client
-    client_actual = await websocket.receive_bytes()
+    client_actual: bytes = await websocket.receive_bytes()  # This is causing an error
 
     # Check if the response is exactly what was expected
     if client_actual != client_expected:
