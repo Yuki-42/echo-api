@@ -15,7 +15,6 @@ from .base_handler import BaseHandler
 from ...models.secure import Token, Password, Device
 from ...security.scheme import crypt_context
 
-
 # Constants
 
 

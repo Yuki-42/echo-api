@@ -7,12 +7,13 @@ from typing import Type
 
 # Third Party Imports
 from psycopg import AsyncConnection
+from psycopg_pool import AsyncConnectionPool
 from psycopg.rows import dict_row
 
 # Local Imports
 from .handlers import *
 from .handlers.secure_handler import SecureHandler
-from ..config.config import Config
+from ..config.config import CONFIG
 
 # Constants
 __all__ = [
@@ -24,10 +25,8 @@ class Database:
     """
     Database connection group.
     """
-    config: Config
-
-    # List of running handlers
-    handlers: list[Type[any]]  # TODO: Get correct typing for this
+    # Connection
+    _connection: AsyncConnection
 
     # Handlers
     users: UsersHandler
@@ -36,14 +35,18 @@ class Database:
     @classmethod
     async def new(
             cls,
-            config: Config
+            connection: AsyncConnection
     ) -> "Database":
         self = cls()
-        self.config = config
+
+        # Get connection for this instance
+        self._connection = connection
+        await self._connection.set_autocommit(True)
+        assert type(self._connection) is AsyncConnection
 
         # Connect handlers
-        self.users = UsersHandler(await self._new_connection())
-        self.secure = SecureHandler(await self._new_connection())
+        self.users = UsersHandler(self._connection)
+        self.secure = SecureHandler(self._connection)
 
         # Add handlers to list
         self.handlers = [
@@ -53,28 +56,8 @@ class Database:
 
         return self
 
-    async def _new_connection(self) -> AsyncConnection:
-        """
-        Create a new database connection.
-
-        Returns:
-            DictConnection: Database connection.
-        """
-        connection: AsyncConnection = await AsyncConnection.connect(
-            dbname=self.config.db.name,
-            user=self.config.db.user,
-            password=self.config.db.password,
-            host=self.config.db.host,
-            port=self.config.db.port,
-            row_factory=dict_row
-        )
-        await connection.set_autocommit(True)
-        assert type(connection) is AsyncConnection
-        return connection
-
     async def close(self) -> None:
         """
-        Close all handlers.
+        Close the database connection.
         """
-        for handler in self.handlers:
-            handler.close()
+        await self._connection.close()

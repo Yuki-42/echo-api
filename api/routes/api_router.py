@@ -13,7 +13,9 @@ from fastapi.responses import HTMLResponse
 # Local Imports
 
 # Constants
-__all__ = ["api_router"]
+__all__ = [
+    "api_router"
+]
 SWAGGER_DARK_CSS: str = "https://cdn.jsdelivr.net/gh/Itz-fork/Fastapi-Swagger-UI-Dark/assets/swagger_ui_dark.min.css"
 
 # Create API router

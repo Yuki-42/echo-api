@@ -18,9 +18,8 @@ class BaseHandler(BaseDbInteractor):
     Base handler.
     """
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """
         Close connection.
         """
-        self.connection.close()
-        self.connection = None
+        await self.connection.close()

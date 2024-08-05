@@ -153,30 +153,6 @@ async def update_user(
     return await user.to_public()
 
 
-@users_router.delete("/", tags=["users"])
-async def delete_user(
-        data: CreateUserData,
-        request: Request
-) -> UserModel:
-    """
-    Deletes a user.
-    """
-    # Get database connection
-    db: Database = request.state.db
-
-    # Check the signature included in the request
-
-    # Check if the user exists
-    user: User = await db.users.email_get(data.email)
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    # Delete user
-    user = await db.users.delete(user.id)
-
-    return await user.to_public()
-
 
 # @users_router.post("/login", tags=["users"])
 # async def login_user(

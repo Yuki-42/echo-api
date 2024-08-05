@@ -1,4 +1,5 @@
 psycopg[binary]~=3.2.1
+psycopg_pool~=3.2.2
 fastapi~=0.111.0
 websockets~=12.0
 passlib~=1.7.4
