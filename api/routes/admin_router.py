@@ -4,15 +4,13 @@ Administrator WS API Router
 # Standard Library Imports
 from hashlib import md5
 from secrets import token_bytes
-from typing import Annotated
 
 # Third Party Imports
-from fastapi import APIRouter, WebSocket, Depends
+from fastapi import APIRouter, WebSocket
 from rsa import encrypt
 from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
-from ..db import Database
 from ..config import CONFIG
 from ..ws_workers import AdminWorker
 

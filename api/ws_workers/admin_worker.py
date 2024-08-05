@@ -9,7 +9,6 @@ from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
-from ..db import Database
 
 # Constants
 __all__ = [

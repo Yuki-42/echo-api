@@ -1,22 +1,22 @@
-# Styleguide 
+# Styleguide
 
 This document outlines the style guide for the Echo API.
 
 ## Comments
 
-All code must have clear and concise comments explaining the purpose of the code. Comments should be used to explain 
+All code must have clear and concise comments explaining the purpose of the code. Comments should be used to explain
 the why, not the how. The how should be explained by the code itself.
 
-Comments should be written to address the reader with the assumption that the reader is not fully familiar with the 
-language or the codebase. 
+Comments should be written to address the reader with the assumption that the reader is not fully familiar with the
+language or the codebase.
 
-A good way to think about comments is to write them as if you are explaining the code to someone who is not familiar 
+A good way to think about comments is to write them as if you are explaining the code to someone who is not familiar
 with any libraries or frameworks that you are using and only has a basic understanding of the language.
 
 ## Type Annotations
 
 All functions, methods, attributes, and variables should have type annotations. Type annotations are used to specify
-exactly what type of data is expected by the code. This makes the code easier to read and understand and allows 
+exactly what type of data is expected by the code. This makes the code easier to read and understand and allows
 static analysis tools to catch potential bugs.
 
 If code is not able to be annotated with types, it should be refactored to allow for type annotations.
@@ -59,6 +59,7 @@ def get_user_name(user_id: int) -> str:
     """
     pass
 
+
 # Bad
 def gun(user_id):
     pass
@@ -77,6 +78,7 @@ class User:
     A class representing a user.
     """
     pass
+
 
 # Bad
 class U:
@@ -101,7 +103,8 @@ mr = 3
 
 All functions, methods, and classes should have a docstring that explains their purpose, arguments, and return values.
 
-Docstrings must be compliant with the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
+Docstrings must be compliant with
+the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
 
 Docstrings should be written in the following format:
 
@@ -136,7 +139,8 @@ Every file must then have 4 single line comments separated by a blank line.
 3. `Local Imports`
 4. `Constants`
 
-The constants section should always contain an `__all__` variable that lists all the functions and classes that are exported by the file.
+The constants section should always contain an `__all__` variable that lists all the functions and classes that are
+exported by the file.
 
 Example:
 
@@ -157,9 +161,11 @@ __all__ = []
 
 ## SQL
 
-Due to the extensive use of SQL in the Echo API, all SQL queries must be written in a way that is very easy to read and understand.
+Due to the extensive use of SQL in the Echo API, all SQL queries must be written in a way that is very easy to read and
+understand.
 
-Do not ever use string concatenation to build SQL queries. This is a security risk and can lead to SQL injection attacks.
+Do not ever use string concatenation to build SQL queries. This is a security risk and can lead to SQL injection
+attacks.
 
 SQL queries should be encapsulated in an instance of the `SQL` class from `psycopg2.sql`, which allows for the use of
 named parameters in the query.
@@ -171,6 +177,7 @@ Example:
 
 ```python
 from psycopg2.sql import SQL, Identifier
+
 
 def get_user_by_id(user_id: int) -> dict:
     """
@@ -191,7 +198,7 @@ def get_user_by_id(user_id: int) -> dict:
                 user_id
             ]
         )
-        
+
         return cursor.fetchone()
 ```
 

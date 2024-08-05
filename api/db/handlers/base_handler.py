@@ -10,7 +10,9 @@ Contains the base handler.
 from ..base_db_interactor import BaseDbInteractor
 
 # Constants
-__all__ = ["BaseHandler"]
+__all__ = [
+    "BaseHandler",
+]
 
 
 class BaseHandler(BaseDbInteractor):

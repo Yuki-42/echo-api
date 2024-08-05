@@ -16,7 +16,7 @@ from ..types.file import File
 
 # Constants
 __all__ = [
-    "FilesHandler"
+    "FilesHandler",
 ]
 
 
@@ -24,6 +24,7 @@ class FilesHandler(BaseHandler):
     """
     Files handler.
     """
+
     async def id_get(
             self,
             file_id: UUID

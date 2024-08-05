@@ -1,6 +1,7 @@
 """
 Contains all security related models
 """
+
 # Standard Library Imports
 from datetime import datetime
 from uuid import UUID

@@ -12,10 +12,13 @@ from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
-from ...models.secure import Token, Password, Device
+from ...models.secure import Device, Password, Token
 from ...security.scheme import crypt_context
 
 # Constants
+__all__ = [
+    "SecureHandler",
+]
 
 
 class SecureHandler(BaseHandler):

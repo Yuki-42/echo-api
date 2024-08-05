@@ -6,13 +6,10 @@ from sys import platform
 from typing import Callable
 
 # Third Party Imports
-from fastapi import APIRouter, FastAPI, WebSocket, Response, Request
+from fastapi import APIRouter, FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from psycopg_pool import AsyncConnectionPool
 
 # Local Imports
-from .db.database import Database
-from .config import CONFIG
 from .routes import *
 
 # Constants

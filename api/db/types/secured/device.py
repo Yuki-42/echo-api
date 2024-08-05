@@ -10,6 +10,9 @@ Contains the device type.
 from ..base_type import BaseType
 
 # Constants
+__all__ = [
+    "Device",
+]
 
 
 class Device(BaseType):

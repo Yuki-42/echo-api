@@ -11,7 +11,7 @@ from psycopg import AsyncConnection
 
 # Constants
 __all__ = [
-    "BaseDbInteractor"
+    "BaseDbInteractor",
 ]
 
 

@@ -5,8 +5,6 @@
 */
 
 
-
-
 function keygen() {
     /**
      * Generate a random 32-bit rsa keypair.
