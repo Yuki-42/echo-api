@@ -16,7 +16,7 @@ from ..base_db_interactor import BaseDbInteractor
 
 # Constants
 __all__ = [
-    "BaseType"
+    "BaseType",
 ]
 
 
@@ -90,7 +90,7 @@ class BaseType(BaseDbInteractor):
         async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
-                    r"SELECT {column} FROM {table} WHERE {key} = %s;"
+                    r"SELECT {COLUMN} FROM {TABLE} WHERE {KEY} = %s;"
                 ).format(
                     column=column,
                     table=self._table_name,
@@ -153,7 +153,7 @@ class BaseType(BaseDbInteractor):
         async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
-                    r"UPDATE {table} SET {column} = %s WHERE {key} = %s;"
+                    r"UPDATE {TABLE} SET {COLUMN} = %s WHERE {KEY} = %s;"
                 ).format(
                     column=column,
                     table=self._table_name,

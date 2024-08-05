@@ -2,10 +2,10 @@
 Contains all tests for the HTTPS API endpoint for users.
 """
 
+from random import randbytes
 # Standard Library Imports
 from unittest import IsolatedAsyncioTestCase
 from uuid import uuid4
-from random import randbytes
 
 # Third Party Imports
 from fastapi.testclient import TestClient
@@ -13,6 +13,7 @@ from httpx import Response
 
 # Local Imports
 from api.api import app
+
 
 # Constants
 

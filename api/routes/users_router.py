@@ -3,26 +3,27 @@ Contains the user routes.
 """
 from typing import Annotated
 
-# Standard Library Imports
-
 # Third Party Imports
 from fastapi import APIRouter, Depends, WebSocket
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
-from jwt import PyJWT
 from pydantic import BaseModel
 
 # Local Imports
 from ..config.config import CONFIG
 from ..db.database import Database
 from ..db.types.user import User
-from ..models.secure import Password, Token, PrivateUser as PrivateUserModel
+from ..models.secure import PrivateUser as PrivateUserModel
 from ..models.user import User as UserModel
+
+# Standard Library Imports
 
 # Constants
 __all__ = [
     "users_router"
 ]
+
+from ..ws_workers.users_worker import UsersWorker
 
 # Create API router
 users_router: APIRouter = APIRouter(
@@ -56,7 +57,11 @@ async def users_ws(
     """
     Route to establish a users websocket.
     """
+    await websocket.accept()
 
+    # Pass off to the worker
+    worker: UsersWorker = UsersWorker(websocket, database)
+    await worker.run()
 
 @users_router.post(
     "/", tags=["users"], responses={

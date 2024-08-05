@@ -71,7 +71,7 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         connection: WebSocketTestSession
 
         with client.websocket_connect("/admin/") as connection:
-            pass
+            return
 
     def test_admin_auth_success(self) -> None:
         """

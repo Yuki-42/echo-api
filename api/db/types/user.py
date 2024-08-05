@@ -17,7 +17,7 @@ from ...models.user import Status, User as PublicUser
 
 # Constants
 __all__ = [
-    "User"
+    "User",
 ]
 
 

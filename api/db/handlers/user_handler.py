@@ -19,7 +19,7 @@ from ...models.secure import Device
 
 # Constants
 __all__ = [
-    "UsersHandler"
+    "UsersHandler",
 ]
 
 

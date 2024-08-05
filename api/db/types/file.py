@@ -18,7 +18,7 @@ from ...models.user import User as UserModel
 
 # Constants
 __all__ = [
-    "File"
+    "File",
 ]
 
 

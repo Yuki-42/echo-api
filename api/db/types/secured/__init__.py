@@ -7,5 +7,9 @@ Initialises the secured subpackage.
 # Third Party Imports
 
 # Local Imports
+from .device import Device
 
 # Constants
+__all__ = [
+    "Device",
+]

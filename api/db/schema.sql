@@ -26,7 +26,10 @@ CREATE TABLE public.users
     tag         INT       NOT NULL DEFAULT 0,
     icon        uuid,
     bio         TEXT,
-    status      jsonb     NOT NULL DEFAULT '{"type": 0, "text": ""}', /* Json Object. See docs/database.md#status */
+    status      jsonb     NOT NULL DEFAULT '{
+      "type": 0,
+      "text": ""
+    }', /* Json Object. See docs/database.md#status */
     last_online TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_online   BOOLEAN   NOT NULL DEFAULT FALSE,
     is_banned   BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -94,9 +97,9 @@ CREATE TABLE public.user_roles
 
 CREATE TABLE public.guild_members
 (
-    user_id         uuid NOT NULL,
-    guild_id        uuid NOT NULL,
-    created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id         uuid      NOT NULL,
+    guild_id        uuid      NOT NULL,
+    created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     nickname        TEXT,
     profile_picture uuid,
     bio             TEXT
@@ -116,7 +119,7 @@ CREATE TABLE public.invites
     guild_id    uuid      NOT NULL,
     channel_id  uuid      NOT NULL,
     created_by  uuid      NOT NULL,
-    uses        REAL       NOT NULL DEFAULT -1,
+    uses        REAL      NOT NULL DEFAULT -1,
     expires_at  TIMESTAMP,
     target_user uuid,
     code        TEXT
@@ -148,7 +151,7 @@ CREATE TABLE secured.two_factor
 CREATE TABLE secured.verification_codes
 (
     user_id uuid PRIMARY KEY,
-    code VARCHAR(256) NOT NULL
+    code    VARCHAR(256) NOT NULL
 );
 
 /* Create checks */

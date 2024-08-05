@@ -3,11 +3,9 @@ Contains database connection information and shared handlers.
 """
 
 # Standard Library Imports
-from typing import Type
 
 # Third Party Imports
 from psycopg import AsyncConnection
-from psycopg_pool import AsyncConnectionPool
 from psycopg.rows import dict_row
 
 # Local Imports
@@ -17,7 +15,7 @@ from ..config.config import CONFIG
 
 # Constants
 __all__ = [
-    "Database"
+    "Database",
 ]
 
 

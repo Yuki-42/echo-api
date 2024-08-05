@@ -1,9 +1,9 @@
-# Permissions 
+# Permissions
 
 ## Overview
 
-Permissions are a way to control access to most parts of the application on a variety of levels. Permissions are 
-assigned to roles or users (on a channel-by-channel basis), and roles are assigned to users. This allows for a flexible 
+Permissions are a way to control access to most parts of the application on a variety of levels. Permissions are
+assigned to roles or users (on a channel-by-channel basis), and roles are assigned to users. This allows for a flexible
 and granular way to control access to the application.
 
 A permissions set is a collection of permissions represented as a bitmask. Each bit in the bitmask represents a
@@ -13,7 +13,7 @@ specific permission. The permissions are defined [here](#permission-definitions)
 
 There are three different permission types, each with their own set of bitmasks:
 
-### Guild Permissions 
+### Guild Permissions
 
 | Permission      | Bit Number | Bit Position (HEX) | Description                                                                                 | OAuth Scope           |
 |-----------------|------------|--------------------|---------------------------------------------------------------------------------------------|-----------------------|
@@ -50,7 +50,7 @@ There are three different permission types, each with their own set of bitmasks:
 | Not Used        | 1          | 0000 0002          | Not used                                                                                    | Not used              |
 | Not Used        | 0          | 0000 0001          | Not used                                                                                    | Not used              |
 
-### Text Channel Permissions 
+### Text Channel Permissions
 
 | Permission                     | Bit Number | Bit Position | Description                                                      | OAuth Scope                     |
 |--------------------------------|------------|--------------|------------------------------------------------------------------|---------------------------------|
