@@ -20,23 +20,13 @@ __all__ = [
     "Database"
 ]
 
-# Create connection pool for database
-connection_pool = AsyncConnectionPool(
-    conninfo=f"dbname={CONFIG.db.name} user={CONFIG.db.user} password={CONFIG.db.password} host={CONFIG.db.host} port={CONFIG.db.port}",
-    open=True,
-    min_size=4,
-    max_size=10,
-    timeout=10,
-)
-
 
 class Database:
     """
     Database connection group.
     """
-
-    # List of running handlers
-    handlers: list[Type[any]]  # TODO: Get correct typing for this
+    # Connection
+    _connection: AsyncConnection
 
     # Handlers
     users: UsersHandler
@@ -44,13 +34,19 @@ class Database:
 
     @classmethod
     async def new(
-            cls
+            cls,
+            connection: AsyncConnection
     ) -> "Database":
         self = cls()
 
+        # Get connection for this instance
+        self._connection = connection
+        await self._connection.set_autocommit(True)
+        assert type(self._connection) is AsyncConnection
+
         # Connect handlers
-        self.users = UsersHandler(await self._new_connection())
-        self.secure = SecureHandler(await self._new_connection())
+        self.users = UsersHandler(self._connection)
+        self.secure = SecureHandler(self._connection)
 
         # Add handlers to list
         self.handlers = [
@@ -60,25 +56,8 @@ class Database:
 
         return self
 
-    @staticmethod
-    async def _new_connection() -> AsyncConnection:
-        """
-        Create a new database connection.
-
-        Returns:
-            DictConnection: Database connection.
-        """
-        connection = await connection_pool.connection(
-            row_factory=dict_row
-        )
-        await connection.set_autocommit(True)
-        assert type(connection) is AsyncConnection
-        return connection
-
     async def close(self) -> None:
         """
         Close the database connection.
         """
-        for handler in self.handlers:
-            await handler.close()
-
+        await self._connection.close()

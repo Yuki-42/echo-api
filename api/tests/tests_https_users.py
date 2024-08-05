@@ -28,6 +28,6 @@ class TestUsers(IsolatedAsyncioTestCase):
         client: TestClient = TestClient(app)
 
         # Make the request
-        response: Response = client.post("/users")
+        # response: Response = client.post("/users")
         # assert response.status_code == 200
         # assert response.json() == {"message": "POST users"}

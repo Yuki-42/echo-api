@@ -4,12 +4,15 @@ Administrator WS API Router
 # Standard Library Imports
 from hashlib import md5
 from secrets import token_bytes
+from typing import Annotated
 
 # Third Party Imports
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, Depends
 from rsa import encrypt
+from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
+from ..db import Database
 from ..config import CONFIG
 from ..ws_workers import AdminWorker
 
@@ -48,10 +51,14 @@ async def admin_ws(
     client_expected: bytes = md5(token).digest()
 
     # Receive the token back from the client
-    client_actual: bytes = await websocket.receive_bytes()  # This is causing an error
+    try:
+        client_actual: bytes = await websocket.receive_bytes()  # This is causing an error
+    except WebSocketDisconnect:
+        return  # Gracefully handle disconnect
 
     # Check if the response is exactly what was expected
     if client_actual != client_expected:
+        await websocket.send_json({"message": "Authentication failed."})
         await websocket.close()
         return
 
@@ -62,7 +69,6 @@ async def admin_ws(
 
     # We now know that the user is authenticated for this session we will accept the event loop and hand it off to the processor
     worker: AdminWorker = AdminWorker(
-        websocket,
-        websocket.state.db
+        websocket
     )
     await worker.run()

@@ -6,6 +6,7 @@ Contains the WS Admin Worker.
 
 # Third Party Imports
 from fastapi import WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
 from ..db import Database
@@ -21,30 +22,28 @@ class AdminWorker:
     Worker to handle admin WebSocket connections.
     """
     connection: WebSocket
-    database: Database
 
     def __init__(
             self,
-            connection: WebSocket,
-            database: Database
+            connection: WebSocket
     ) -> None:
         """
         Initialise the worker.
 
         Args:
             connection (WebSocket): WebSocket connection.
-            database (Database): Database connection.
         """
         self.connection = connection
-        self.database = database
 
     async def run(self) -> None:
         """
         Run the worker.
         """
-        while True:
-            data: dict = await self.connection.receive_json()
-
+        while True:  # Why is this causing an error
+            try:  # TODO: Figure out a way around this
+                data: dict = await self.connection.receive_json()  # THIS IS THROWING A 1000 ERROR. This means that the websocket is already closed
+            except WebSocketDisconnect:
+                return  # Gracefully handle disconnect
             # Ensure that the base level spec is present
             if "action" not in data:
                 await self.connection.send_json(
@@ -56,6 +55,10 @@ class AdminWorker:
             action: str = data.get("action")
 
             match action:
+                case "ping":
+                    await self.connection.send_json(
+                        {"action": "pong"}
+                    )
                 case "get_users":
                     await self.connection.send_json(
                         {"action": "pong"}
