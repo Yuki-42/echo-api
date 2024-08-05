@@ -122,24 +122,10 @@ CREATE TABLE public.invites
     code        TEXT
 );
 
-CREATE TABLE secured.devices
-(
-    id          uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name        TEXT      NOT NULL,
-    ip          TEXT      NOT NULL,
-    mac         TEXT      NOT NULL,
-    lang        TEXT      NOT NULL,
-    os          TEXT      NOT NULL,
-    screen_size TEXT      NOT NULL,
-    country     TEXT      NOT NULL
-);
-
 CREATE TABLE secured.tokens
 (
     id        uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
     user_id   uuid      NOT NULL,
-    device_id uuid      NOT NULL,
     token     TEXT      NOT NULL,
     last_used TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
