@@ -9,30 +9,18 @@ from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
+from .base_worker import BaseWorker
 
 # Constants
 __all__ = [
-    "AdminWorker"
+    "AdminWorker",
 ]
 
 
-class AdminWorker:
+class AdminWorker(BaseWorker):
     """
     Worker to handle admin WebSocket connections.
     """
-    connection: WebSocket
-
-    def __init__(
-            self,
-            connection: WebSocket
-    ) -> None:
-        """
-        Initialise the worker.
-
-        Args:
-            connection (WebSocket): WebSocket connection.
-        """
-        self.connection = connection
 
     async def run(self) -> None:
         """

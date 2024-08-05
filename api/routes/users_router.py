@@ -23,6 +23,8 @@ __all__ = [
     "users_router"
 ]
 
+from ..ws_workers.users_worker import UsersWorker
+
 # Create API router
 users_router: APIRouter = APIRouter(
     prefix="/users",
@@ -55,7 +57,11 @@ async def users_ws(
     """
     Route to establish a users websocket.
     """
+    await websocket.accept()
 
+    # Pass off to the worker
+    worker: UsersWorker = UsersWorker(websocket, database)
+    await worker.run()
 
 @users_router.post(
     "/", tags=["users"], responses={
