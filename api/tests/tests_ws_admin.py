@@ -33,7 +33,7 @@ def run_authenticated_test(
 
     # Connect to the endpoint
     connection: WebSocketTestSession
-    with client.websocket_connect("/admin/ws") as connection:
+    with client.websocket_connect("/admin/") as connection:
         # Get the challenge
         challenge: bytes = connection.receive_bytes()
 
@@ -70,7 +70,7 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         # Make the request
         connection: WebSocketTestSession
 
-        with client.websocket_connect("/admin/ws") as connection:
+        with client.websocket_connect("/admin/") as connection:
             pass
 
     def test_admin_auth_success(self) -> None:
@@ -82,7 +82,7 @@ class TestAdminWs(IsolatedAsyncioTestCase):
 
         # Connect to the endpoint
         connection: WebSocketTestSession
-        with client.websocket_connect("/admin/ws") as connection:
+        with client.websocket_connect("/admin/") as connection:
             # Get the challenge
             challenge: bytes = connection.receive_bytes()
 
@@ -107,7 +107,7 @@ class TestAdminWs(IsolatedAsyncioTestCase):
 
         # Connect to the endpoint
         connection: WebSocketTestSession
-        with client.websocket_connect("/admin/ws") as connection:
+        with client.websocket_connect("/admin/") as connection:
             # Get the challenge
             challenge: bytes = connection.receive_bytes()
 
