@@ -13,7 +13,6 @@ The token is generated using the `PyJWT` library. The data encoded in the token 
 ```json
 {
     "sub": user_id,
-    "device": device_id,
     "exp": datetime.utcnow() + timedelta(days=7)
 }
 ```

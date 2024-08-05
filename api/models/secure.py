@@ -13,25 +13,9 @@ from .user import User
 
 # Constants
 __all__ = [
-    "Device",
     "Token",
     "Password",
 ]
-
-
-class Device(BaseModel):
-    """
-    Device model.
-    """
-    id: UUID
-    created_at: datetime
-    name: str
-    ip: str
-    mac: str
-    lang: str
-    os: str
-    screen_size: str
-    country: str
 
 
 class Token(BaseModel):
@@ -39,7 +23,6 @@ class Token(BaseModel):
     Token model.
     """
     user: User
-    device: Device
     token: str
     last_used: datetime
 
