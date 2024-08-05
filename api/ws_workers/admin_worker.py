@@ -39,11 +39,13 @@ class AdminWorker:
         """
         Run the worker.
         """
-        while True:  # Why is this causing an error
-            try:  # TODO: Figure out a way around this
+        while True:
+            try:  # TODO: Figure out a way around having to use try except
                 data: dict = await self.connection.receive_json()  # THIS IS THROWING A 1000 ERROR. This means that the websocket is already closed
             except WebSocketDisconnect:
+                await self.connection.close()
                 return  # Gracefully handle disconnect
+
             # Ensure that the base level spec is present
             if "action" not in data:
                 await self.connection.send_json(
@@ -82,4 +84,3 @@ class AdminWorker:
         Delete a user.
         """
         pass
-

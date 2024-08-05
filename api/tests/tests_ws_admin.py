@@ -21,6 +21,40 @@ __all__ = [
 ]
 
 
+def run_authenticated_test(
+        message: dict,
+        expected: dict
+) -> None:
+    """
+    Runs a test with data to send and expected responses.
+    """
+    # Create test client
+    client: TestClient = TestClient(app)
+
+    # Connect to the endpoint
+    connection: WebSocketTestSession
+    with client.websocket_connect("/admin/ws") as connection:
+        # Get the challenge
+        challenge: bytes = connection.receive_bytes()
+
+        # Decrypt challenge using private key
+        challenge = decrypt(challenge, CONFIG.server.owner_private_key)
+
+        # Hash the challenge
+        response: bytes = md5(challenge).digest()
+
+        # Reply with the response
+        connection.send_bytes(response)
+
+        # Check auth success
+        assert connection.receive_json() == {"message": "Authenticated."}
+
+        # Perform test
+        connection.send_json(message)
+
+        assert connection.receive_json() == expected
+
+
 class TestAdminWs(IsolatedAsyncioTestCase):
     """
     Test the admin WS endpoints.
@@ -39,9 +73,9 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         with client.websocket_connect("/admin/ws") as connection:
             pass
 
-    def test_admin_auth(self) -> None:
+    def test_admin_auth_success(self) -> None:
         """
-        Tests the auth flow for admin connection.
+        Tests the auth flow for admin connection with a successful auth attempt.
         """
         # Create test client
         client: TestClient = TestClient(app)
@@ -63,3 +97,38 @@ class TestAdminWs(IsolatedAsyncioTestCase):
 
             # Check auth success
             assert connection.receive_json() == {"message": "Authenticated."}
+
+    def test_admin_auth_fail(self) -> None:
+        """
+        Tests the auth flow for admin connection with a failed auth attempt.
+        """
+        # Create test client
+        client: TestClient = TestClient(app)
+
+        # Connect to the endpoint
+        connection: WebSocketTestSession
+        with client.websocket_connect("/admin/ws") as connection:
+            # Get the challenge
+            challenge: bytes = connection.receive_bytes()
+
+            # Decrypt challenge using private key
+            challenge = decrypt(challenge, CONFIG.server.owner_private_key)
+
+            # Hash the challenge
+            response: bytes = md5(challenge).digest()
+
+            # Reply with the wrong response
+            connection.send_bytes(response[::-1])
+
+            # Check auth fail
+            assert connection.receive_json() == {"message": "Authentication failed."}
+
+    def test_admin_ping(self) -> None:
+        """
+        Test the admin WS ping action.
+        """
+        # Run authenticated test
+        run_authenticated_test(
+            {"action": "ping"},
+            {"action": "pong"}
+        )
