@@ -29,7 +29,7 @@ administrator_router: APIRouter = APIRouter(
 
 
 # Create WS connection route
-@administrator_router.websocket("/ws")
+@administrator_router.websocket("/")
 async def admin_ws(
         websocket: WebSocket
 ) -> None:
