@@ -6,7 +6,7 @@ from typing import Annotated
 # Standard Library Imports
 
 # Third Party Imports
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from jwt import PyJWT
@@ -48,24 +48,14 @@ class LoginUserData(BaseModel):
     password: str
 
 
-@users_router.get("/<string: user_id>", tags=["users"])
-async def read_users(
-        user_id: str,
-        request: Request
-) -> UserModel | PrivateUserModel:
+@users_router.websocket("/")
+async def users_ws(
+        websocket: WebSocket,
+        database: Annotated[Database, Depends(Database.new)]
+) -> None:
     """
-    Gets a user by ID.
+    Route to establish a users websocket.
     """
-    # Get database connection
-    db: Database = request.state.db
-
-    # Check if user exists
-    user: User = await db.users.id_get(user_id)
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return await user.to_public()
 
 
 @users_router.post(
@@ -84,6 +74,7 @@ async def create_user(
     """
     # Do user password checks before anything else to minimise in-flight time for password
     if len(data.password) > CONFIG.user_security.password_maximum_length:
+
         raise HTTPException(status_code=430, detail="Password too long")
 
     if len(data.password) < CONFIG.user_security.password_minimum_length:
@@ -138,26 +129,23 @@ async def create_user(
 @users_router.put("/", tags=["users"])
 async def update_user(
         data: CreateUserData,
-        request: Request
+        request: Request,
+        database: Annotated[Database, Depends(Database.new)]
 ) -> UserModel:
     """
     Updates a user.
     """
-    # Get database connection
-    db: Database = request.state.db
 
     # Check if the user exists
-    user: User = await db.users.email_get(data.email)
+    user: User = await database.users.email_get(data.email)
 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
     # Update user
-    user = await db.users.update(user.id, data.email, data.username, data.password)
+    user = await database.users.update(user.id, data.email, data.username, data.password)
 
     return await user.to_public()
-
-
 
 # @users_router.post("/login", tags=["users"])
 # async def login_user(
