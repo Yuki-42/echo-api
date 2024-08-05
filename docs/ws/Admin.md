@@ -1,7 +1,17 @@
-# Administrator Websockets API
+# Administrator Websocket API
 
-The Admin API is entirely self-contained inside a single websockets connection and is used to securely provide 
+The Admin API is entirely self-contained inside a single websocket connection and is used to securely provide 
 administrative functions to the server owner. This API is not intended for use by any users but the server owner. 
+
+## Table of Contents
+<!-- TOC -->
+* [Administrator Websocket API](#administrator-websocket-api)
+  * [Table of Contents](#table-of-contents)
+  * [Handshake](#handshake)
+  * [Actions](#actions)
+    * [Get Users (`get_users`)](#get-users-get_users)
+    * [Delete User (`delete_user`)](#delete-user-delete_user)
+<!-- TOC -->
 
 ## Handshake
 
@@ -20,14 +30,22 @@ extremely simple:
 1. The server generates a 2048-bit symmetric key and encrypts it using the client's public key.
 2. The client decrypts the message using their private key and the shared secret is established.
 
+The only reason that this handshake can be so simple is that the information sent across the socket using this shared 
+secret does not need to be read again at the termination of the session. 
+
 ## Actions
 
 The Admin API provides various actions that can be used by the server owner to manage their server.
 
-### `get_users`
+| Name                                                    | Code          |
+|---------------------------------------------------------|---------------|
+| [Get Users (`get_users`)](#get-users-get_users)         | `get_users`   |
+| [Delete User (`delete_user`)](#delete-user-delete_user) | `delete_user` |
+
+### Get Users (`get_users`)
 
 This action is used to retrieve a list of all users on the server. This list includes all data in the users table.
 
-### `delete_user`
+### Delete User (`delete_user`)
 
 This action is used to delete a user from the server. This action requires the user_id of the user to be deleted.
