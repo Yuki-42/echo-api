@@ -1,11 +1,12 @@
 """
 Contains the user routes.
 """
+from typing import Annotated
 
 # Standard Library Imports
 
 # Third Party Imports
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from jwt import PyJWT
@@ -75,7 +76,8 @@ async def read_users(
 )
 async def create_user(
         data: CreateUserData,
-        request: Request
+        request: Request,
+        database: Annotated[Database, Depends(Database.new)]
 ) -> PrivateUserModel:
     """
     Creates a new user.
@@ -126,6 +128,9 @@ async def create_user(
 
     # Create user
     user = await db.users.new(data.email, data.username, data.password)
+
+    # Close database connection
+    await database.close()
 
     return await user.to_private()
 

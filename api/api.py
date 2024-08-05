@@ -28,14 +28,6 @@ if platform == "win32":
     set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 
-# Superclass FastAPI to include a state
-class StatefulAPI(FastAPI):
-    """
-    Superclass to provide state storage (just a dict)
-    """
-    state: dict[str, any]
-
-
 def create_app(
         extensions: list[APIRouter] = None,
         middleware: list[Callable] = None
@@ -69,36 +61,3 @@ def create_app(
 
 # Create app
 app: FastAPI = create_app()
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    """
-    Startup event.
-    """
-    # Create the connection pool
-    connection_pool: AsyncConnectionPool = AsyncConnectionPool(  # This is broken
-        conninfo=f"dbname={CONFIG.db.name} user={CONFIG.db.user} password={CONFIG.db.password} host={CONFIG.db.host} port={CONFIG.db.port}",
-        open=False,
-        min_size=4,
-        max_size=10,
-        timeout=10,
-    )
-    await connection_pool.open()
-
-    app.state.pool = connection_pool
-
-
-@app.middleware("http")
-async def db_middleware(
-        request: Request,
-        call_next: callable
-) -> Response:
-    """
-    Middleware to connect to the database.
-    """
-    with app.state.pool.connection() as connection:
-        request.state.db = await Database.new(connection)
-        response = await call_next(request)
-        await request.state.db.close()
-        return response

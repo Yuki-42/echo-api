@@ -40,7 +40,7 @@ class AdminWorker:
         Run the worker.
         """
         while True:
-            try:  # TODO: Figure out a way around having to use try except
+            try:
                 data: dict = await self.connection.receive_json()  # THIS IS THROWING A 1000 ERROR. This means that the websocket is already closed
             except WebSocketDisconnect:
                 await self.connection.close()

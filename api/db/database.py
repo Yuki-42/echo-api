@@ -34,27 +34,36 @@ class Database:
 
     @classmethod
     async def new(
-            cls,
-            connection: AsyncConnection
+            cls
     ) -> "Database":
         self = cls()
 
-        # Get connection for this instance
-        self._connection = connection
-        await self._connection.set_autocommit(True)
-        assert type(self._connection) is AsyncConnection
+        try:
+            # Get connection for this instance
+            self._connection = await AsyncConnection.connect(
+                host=CONFIG.db.host,
+                port=CONFIG.db.port,
+                user=CONFIG.db.user,
+                password=CONFIG.db.password,
+                dbname=CONFIG.db.name,
+                row_factory=dict_row
+            )
+            await self._connection.set_autocommit(True)
+            assert type(self._connection) is AsyncConnection
 
-        # Connect handlers
-        self.users = UsersHandler(self._connection)
-        self.secure = SecureHandler(self._connection)
+            # Connect handlers
+            self.users = UsersHandler(self._connection)
+            self.secure = SecureHandler(self._connection)
 
-        # Add handlers to list
-        self.handlers = [
-            self.users,
-            self.secure
-        ]
+            # Add handlers to list
+            self.handlers = [
+                self.users,
+                self.secure
+            ]
 
-        return self
+            yield self
+        finally:
+            await self.close()
 
     async def close(self) -> None:
         """
