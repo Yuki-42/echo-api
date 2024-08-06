@@ -5,7 +5,7 @@ Base API router.
 # Standard Library Imports
 
 # Third Party Imports
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
@@ -49,3 +49,11 @@ async def openapi(request: Request) -> dict:
     Route to display the OpenAPI schema
     """
     return request.app.openapi()
+
+
+@api_router.get("/teapot", include_in_schema=False)
+async def teapot() -> dict:
+    """
+    Teapot route.
+    """
+    raise HTTPException(status_code=418, detail="I'm a teapot.")
