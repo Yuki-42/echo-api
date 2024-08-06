@@ -12,7 +12,7 @@ from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
-from ...models.secure import Device, Password, Token
+from ...models.secure import Password, Token
 from ...security.scheme import crypt_context
 
 # Constants
@@ -129,39 +129,6 @@ class SecureHandler(BaseHandler):
         return Password(
             hash=row["password"],
             last_updated=row["last_updated"]
-        )
-
-    async def get_device(
-            self,
-            device_id: UUID
-    ) -> Device:
-        """
-        Get a device.
-
-        Args:
-            device_id (UUID): Device id.
-
-        Returns:
-            Device: Device.
-        """
-        cursor: AsyncCursor
-        async with self.connection.cursor() as cursor:
-            await cursor.execute(
-                "SELECT * FROM secured.devices WHERE id = %s;",
-                [device_id]
-            )
-            row: DictRow = await cursor.fetchone()
-
-        return Device(
-            id=row["id"],
-            created_at=row["created_at"],
-            name=row["name"],
-            ip=row["ip"],
-            mac=row["mac"],
-            lang=row["lang"],
-            os=row["os"],
-            screen_size=row["screen_size"],
-            country=row["country"]
         )
 
     async def new_token(

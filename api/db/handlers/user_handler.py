@@ -15,7 +15,6 @@ from psycopg.sql import SQL
 from .base_handler import BaseHandler
 from .secure_handler import SecureHandler
 from ..types.user import User
-from ...models.secure import Device
 
 # Constants
 __all__ = [
@@ -176,8 +175,7 @@ class UsersHandler(BaseHandler):
     async def session_verify(
             self,
             email: str,
-            token: str,
-            device: Device  # This relies on the client submitting the device information, making it trivial to fake
+            token: str
     ) -> User | None:
         """
         Login a user.
@@ -185,7 +183,6 @@ class UsersHandler(BaseHandler):
         Args:
             email (str): User email.
             token (str): User access token.
-            device (Device): Device for the token.
 
         Returns:
             User: Live user view.

@@ -63,6 +63,7 @@ async def users_ws(
     worker: UsersWorker = UsersWorker(websocket, database)
     await worker.run()
 
+
 @users_router.post(
     "/", tags=["users"], responses={
         409: {"description": "User already exists"},
@@ -79,7 +80,6 @@ async def create_user(
     """
     # Do user password checks before anything else to minimise in-flight time for password
     if len(data.password) > CONFIG.user_security.password_maximum_length:
-
         raise HTTPException(status_code=430, detail="Password too long")
 
     if len(data.password) < CONFIG.user_security.password_minimum_length:

@@ -14,6 +14,7 @@ appropriate permissions.
   * [Actions](#actions)
     * [New (`new`)](#new-new)
     * [Login (`login`)](#login-login)
+    * [Logout (`logout`)](#logout-logout)
     * [Me (`me`)](#me-me)
     * [Details (`details`)](#details-details)
 <!-- TOC -->
@@ -43,14 +44,21 @@ Action Pathway:
     {
         "action": "new",
         "data": {
-            "user_id": "user_id",
-            "username": "username",
-            "email": "email"
+            **user_private_data**
         }
     }
     ```
     Where `user_id` is the ID of the new user, `username` is the username of the new user, and `email` is the email of 
     the new user.
+
+During this process the server may respond with one of the following errors:
+
+| Error Code                    | Description                                              | `data` Model                                                     |
+|-------------------------------|----------------------------------------------------------|------------------------------------------------------------------|
+| `email_exists`                | The email is already in use.                             | `{}`                                                             |
+| `invalid_email`               | The email is not valid.                                  | `{}`                                                             |
+| `password_length_invalid`     | The password is either too long or short.                | `{"max_len": int, "min_len": int}`                               |
+| `password_complexity_invalid` | One of the server-set password complexity checks failed. | `{"condition": "password_condition_name", "minimum_value": int}` | 
 
 ### Login (`login`)
 
@@ -62,7 +70,7 @@ Action Pathway:
     {
         "action": "login",
         "data": {
-            "username": "username",
+            "email": "email",
             "password": "password"
         }
     }

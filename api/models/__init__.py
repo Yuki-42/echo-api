@@ -8,7 +8,7 @@ Initialises the models package.
 
 # Local Imports
 from .file import File
-from .secure import Device, PrivateUser, Token
+from .secure import PrivateUser, Token
 from .user import Status, StatusType, User
 
 # Constants
@@ -17,7 +17,6 @@ __all__ = [
     "StatusType",
     "Status",
     "File",
-    "Device",
     "Token",
     "PrivateUser",
 ]
