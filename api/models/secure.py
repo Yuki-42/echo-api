@@ -9,6 +9,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 # Local Imports
+from .base import BaseTableModel
 from .user import User
 
 # Constants
@@ -18,7 +19,7 @@ __all__ = [
 ]
 
 
-class VerificationCode(BaseModel):
+class VerificationCode(BaseTableModel):
     """
     Verification code model.
     """
@@ -27,7 +28,7 @@ class VerificationCode(BaseModel):
     expires: datetime
 
 
-class Token(BaseModel):
+class Token(BaseTableModel):
     """
     Token model.
     """
@@ -36,7 +37,7 @@ class Token(BaseModel):
     last_used: datetime
 
 
-class Password(BaseModel):
+class Password(BaseTableModel):
     """
     Password model.
     """
@@ -44,7 +45,7 @@ class Password(BaseModel):
     last_updated: datetime
 
 
-class PrivateUser(User):
+class PrivateUser(BaseModel):
     """
     Private user model.
     """

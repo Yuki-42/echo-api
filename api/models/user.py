@@ -5,13 +5,14 @@ Contains user related models.
 # Standard Library Imports
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Dict, Optional
 from uuid import UUID
 
 # Third Party Imports
 from pydantic import BaseModel
 
 # Local Imports
+from .base import BaseTableModel
 
 # Constants
 
@@ -20,6 +21,8 @@ __all__ = [
     "StatusType",
     "Status",
 ]
+
+from pydantic.main import IncEx
 
 
 class StatusType(int, Enum):
@@ -40,12 +43,10 @@ class Status(BaseModel):
     text: str
 
 
-class User(BaseModel):
+class User(BaseTableModel):
     """
     User model.
     """
-    id: UUID
-    created_at: datetime
     email: str
     username: str
     icon: Optional[UUID] = None
@@ -55,3 +56,4 @@ class User(BaseModel):
     is_online: bool
     is_banned: bool
     is_verified: bool
+

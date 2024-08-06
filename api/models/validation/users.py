@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 # Local Imports
 from .bases import BaseMessage, BaseError
+from ..user import User
 
 # Constants
 __all__ = [
@@ -31,6 +32,13 @@ class RegisterInput(BaseMessage):
     Model for registering a user.
     """
     data: RegisterInputData
+
+
+class RegisterOutputData(BaseModel):
+    """
+    Model for registering a user.
+    """
+    user: User
 
 
 class LoginInputData(BaseModel):
