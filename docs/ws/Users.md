@@ -86,6 +86,40 @@ Action Pathway:
         "error": "error_message"
     }
     ```
+   
+### Logout (`logout`)
+
+Remove a specified token from the database. This is used to log out a user on any device.
+
+Action Pathway:
+
+1. Client sends a `logout` action with the following payload:
+    ```json
+    {
+        "action": "logout",
+        "data": {
+            "token": "jwt_token"
+        }
+    }
+    ```
+   
+2. Server responds with the following payload if the token is found and belongs to the user:
+    ```json
+    {
+        "action": "logout",
+        "data": {
+            "success": true
+        }
+    }
+    ```
+   
+    Server responds with the following payload if the token is not found or does not belong to the user:
+    ```json
+    {
+        "action": "logout",
+        "error": "error_message"
+    }
+    ```
 
 ### Me (`me`)
 
