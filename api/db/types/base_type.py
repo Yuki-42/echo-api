@@ -90,11 +90,11 @@ class BaseType(BaseDbInteractor):
         async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
-                    r"SELECT {COLUMN} FROM {TABLE} WHERE {KEY} = %s;"
+                    r"SELECT {} FROM {} WHERE {} = %s;"
                 ).format(
-                    column=column,
-                    table=self._table_name,
-                    key=key
+                    column,
+                    self._table_name,
+                    key
                 ),
                 [
                     str(key_value),
@@ -153,11 +153,11 @@ class BaseType(BaseDbInteractor):
         async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
-                    r"UPDATE {TABLE} SET {COLUMN} = %s WHERE {KEY} = %s;"
+                    r"UPDATE {} SET {} = %s WHERE {} = %s;"
                 ).format(
-                    column=column,
-                    table=self._table_name,
-                    key=key
+                    self._table_name,
+                    column,
+                    key
                 ),
                 [
                     value,
