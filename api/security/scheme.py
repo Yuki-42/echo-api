@@ -24,7 +24,7 @@ __all__ = [
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 # Create crypt config
-crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+crypt_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 
 def encode_access_token(
