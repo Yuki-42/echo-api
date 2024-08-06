@@ -138,7 +138,7 @@ CREATE TABLE secured.passwords
     id           uuid PRIMARY KEY      DEFAULT public.uuid_generate_v4(),
     created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_id      uuid         NOT NULL UNIQUE,
-    password     VARCHAR(130) NOT NULL,
+    hash     VARCHAR(130) NOT NULL,
     last_updated TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
