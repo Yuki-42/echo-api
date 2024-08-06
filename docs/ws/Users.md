@@ -12,17 +12,13 @@ appropriate permissions.
 * [Users Websocket API](#users-websocket-api)
   * [Table of Contents](#table-of-contents)
   * [Actions](#actions)
-    * [Me (`me`)](#me-me)
     * [New (`new`)](#new-new)
+    * [Login (`login`)](#login-login)
+    * [Me (`me`)](#me-me)
     * [Details (`details`)](#details-details)
 <!-- TOC -->
 
 ## Actions
-
-### Me (`me`)
-
-Gets all information about the current authenticated user. Shorthand for [details](#details-details) using current
-`user_id`.
 
 ### New (`new`)
 
@@ -55,6 +51,46 @@ Action Pathway:
     ```
     Where `user_id` is the ID of the new user, `username` is the username of the new user, and `email` is the email of 
     the new user.
+
+### Login (`login`)
+
+Logs in a user.
+
+Action Pathway:
+1. Client sends a `login` action with the following payload:
+    ```json
+    {
+        "action": "login",
+        "data": {
+            "username": "username",
+            "password": "password"
+        }
+    }
+    ```
+   
+2. Server responds with the following payload if login is successful:
+    ```json
+    {
+        "action": "login",
+        "data": {
+            "token": "jwt_token"
+        }
+    }
+    ```
+    Where `user_id` is the ID of the user, `username` is the username of the user, and `email` is the email of the user.
+
+    Server responds with the following payload if login is unsuccessful:
+    ```json
+    {
+        "action": "login",
+        "error": "error_message"
+    }
+    ```
+
+### Me (`me`)
+
+Gets all information about the current authenticated user. Shorthand for [details](#details-details) using current
+`user_id`.
 
 ### Details (`details`)
 
