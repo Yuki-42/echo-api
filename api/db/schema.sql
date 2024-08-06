@@ -127,32 +127,37 @@ CREATE TABLE public.invites
 
 CREATE TABLE secured.tokens
 (
-    id        uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    user_id   uuid      NOT NULL,
-    token     TEXT      NOT NULL,
-    last_used TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id         uuid PRIMARY KEY   DEFAULT public.uuid_generate_v4(),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id    uuid      NOT NULL,
+    last_used  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE secured.passwords
 (
-    user_id      uuid PRIMARY KEY,
+    id           uuid PRIMARY KEY      DEFAULT public.uuid_generate_v4(),
+    created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id      uuid         NOT NULL UNIQUE,
     password     VARCHAR(130) NOT NULL,
     last_updated TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE secured.two_factor
 (
-    user_id      uuid PRIMARY KEY,
+    id           uuid PRIMARY KEY       DEFAULT public.uuid_generate_v4(),
+    created_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id      uuid          NOT NULL UNIQUE,
     secret       TEXT          NOT NULL,
-    backup_codes VARCHAR(8)[8] NOT NULL,
-    last_updated TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+    backup_codes VARCHAR(8)[8] NOT NULL
 );
 
 CREATE TABLE secured.verification_codes
 (
-    user_id uuid PRIMARY KEY,
-    code    VARCHAR(256) NOT NULL,
-    expires TIMESTAMP    NOT NULL
+    id         uuid PRIMARY KEY      DEFAULT public.uuid_generate_v4(),
+    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id    uuid         NOT NULL UNIQUE,
+    code       VARCHAR(256) NOT NULL,
+    expires    TIMESTAMP    NOT NULL
 );
 
 /* Create checks */
@@ -186,13 +191,6 @@ CREATE OR REPLACE RULE update_last_updated AS
     ON UPDATE TO secured.passwords
     DO INSTEAD
     UPDATE secured.passwords
-    SET last_updated = CURRENT_TIMESTAMP
-    WHERE user_id = new.user_id;
-
-CREATE OR REPLACE RULE update_last_updated_two_factor AS
-    ON UPDATE TO secured.two_factor
-    DO INSTEAD
-    UPDATE secured.two_factor
     SET last_updated = CURRENT_TIMESTAMP
     WHERE user_id = new.user_id;
 
@@ -251,8 +249,6 @@ ALTER TABLE public.invites
 
 ALTER TABLE secured.tokens
     ADD CONSTRAINT tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
-ALTER TABLE secured.tokens
-    ADD CONSTRAINT tokens_device_id_fkey FOREIGN KEY (device_id) REFERENCES secured.devices (id) ON DELETE CASCADE;
 
 ALTER TABLE secured.passwords
     ADD CONSTRAINT passwords_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users (id) ON DELETE CASCADE;
