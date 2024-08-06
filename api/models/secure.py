@@ -4,7 +4,6 @@ Contains all security related models
 
 # Standard Library Imports
 from datetime import datetime
-from uuid import UUID
 
 # Third Party Imports
 from pydantic import BaseModel
@@ -17,6 +16,15 @@ __all__ = [
     "Token",
     "Password",
 ]
+
+
+class VerificationCode(BaseModel):
+    """
+    Verification code model.
+    """
+    user: User
+    code: str
+    expires: datetime
 
 
 class Token(BaseModel):
