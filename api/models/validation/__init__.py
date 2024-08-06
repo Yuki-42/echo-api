@@ -7,10 +7,12 @@ Initialises the validation subpackage.
 # Third Party Imports
 
 # Local Imports
-from .users import RegisterInput, LoginInput
+from .users import RegisterInput, LoginInput, RegisterInputData, LoginInputData
 
 # Constants
 __all__ = [
     "RegisterInput",
+    "RegisterInputData",
     "LoginInput",
+    "LoginInputData",
 ]
