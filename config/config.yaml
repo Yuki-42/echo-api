@@ -18,7 +18,7 @@ default: &default
         # Passwords for users
         password_minimum_length: 10
         password_maximum_length: 1048576  # 1 MB assuming each character is 1 byte
-        password_require_uppercase: 1
+        password_require_uppercase: 2
         password_require_lowercase: 2
         password_require_number: 2
         password_require_special_character: 2
