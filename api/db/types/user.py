@@ -39,7 +39,7 @@ class User(BaseType):
             row (DictRow): Row.
         """
         # Initialize BaseType
-        super(User, self).__init__(connection, row)
+        super().__init__(connection, row)
 
         self._table_name = Identifier("users")
 

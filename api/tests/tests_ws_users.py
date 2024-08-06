@@ -1,10 +1,11 @@
 """
 Contains the user WS test endpoints.
 """
-
 # Standard Library Imports
 from unittest import IsolatedAsyncioTestCase
 from uuid import UUID, uuid4
+from random import choice as random_choice, randint
+from string import printable, ascii_letters, digits, punctuation
 
 # Third Party Imports
 from fastapi.testclient import TestClient
@@ -17,6 +18,43 @@ from api.config import CONFIG
 __all__ = [
     "TestUserWs"
 ]
+
+
+def generate_password(
+        num_lowercase: int,
+        num_uppercase: int,
+        num_number: int,
+        num_special: int,
+        length: int
+) -> str:  # TODO: Make this include all possible characters including random bytes
+    """
+    Generates a password with the given requirements.
+
+    Args:
+        num_lowercase (int): The number of lowercase characters to include.
+        num_uppercase (int): The number of uppercase characters to include.
+        num_number (int): The number of number characters to include.
+        num_special (int): The number of special characters to include.
+        length (int): The length of the password.
+    """
+    # Check that the individual requirements are not greater than the total length
+    if num_lowercase + num_uppercase + num_number + num_special > length:
+        raise ValueError("The sum of the individual requirements must be less than the total length.")
+
+    # Generate the password
+    password: str = (
+        f"{random_choice(ascii_letters.lower()) * num_lowercase}"
+        f"{random_choice(ascii_letters.upper()) * num_uppercase}"
+        f"{random_choice(digits) * num_number}"
+        f"{random_choice(punctuation) * num_special}"
+    )
+
+    # Pad the password with random text if it is too short
+    for _ in range(length - len(password)):
+        password += random_choice(printable)
+
+    # Return the password
+    return password
 
 
 class TestUserWs(IsolatedAsyncioTestCase):
@@ -46,11 +84,12 @@ class TestUserWs(IsolatedAsyncioTestCase):
         with client.websocket_connect("/users/") as connection:
             # Generate the user data
             user_id: UUID = uuid4()
-            password: str = (
-                f"{"a" * CONFIG.user_security.password_require_lowercase}"
-                f"{"A" * CONFIG.user_security.password_require_uppercase}"
-                f"{"1" * CONFIG.user_security.password_require_number}"
-                f"{"!" * CONFIG.user_security.password_require_special_character}"
+            password: str = generate_password(
+                num_lowercase=CONFIG.user_security.password_require_lowercase,
+                num_uppercase=CONFIG.user_security.password_require_uppercase,
+                num_number=CONFIG.user_security.password_require_number,
+                num_special=CONFIG.user_security.password_require_special_character,
+                length=100
             )
             # Submit the user data
             user_data: dict = {
@@ -62,7 +101,14 @@ class TestUserWs(IsolatedAsyncioTestCase):
                 }
             }
 
+            print(password)
+            print(len(password))
+
             connection.send_json(user_data)
 
+            # Print the response
+            data: dict = connection.receive_json()
+
+            print(data)
 
 

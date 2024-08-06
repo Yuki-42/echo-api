@@ -171,15 +171,18 @@ class SecureHandler(BaseHandler):
 
             token_data: list[DictRow] = await cursor.fetchall()
 
-        # Get devices
-        for token in token_data:
-            token["device"] = await self.get_device(token["device_id"])
-
         return [
             Token(
                 user=await self.users.id_get(user_id),
-                device=token["device"],
                 token=token["token"],
                 last_used=token["last_used"]
             ) for token in token_data
         ]
+
+    async def get_verification_code(
+            self,
+            validation_token: str
+    ) -> VerificationCode:
+
+
+        pass

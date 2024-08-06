@@ -40,7 +40,7 @@ class BaseType(BaseDbInteractor):
         Initialize BaseType.
         """
         # Initialize BaseDbInteractor
-        super(BaseType, self).__init__(connection)
+        super().__init__(connection)
 
         # Set attributes
         self.id = row["id"]

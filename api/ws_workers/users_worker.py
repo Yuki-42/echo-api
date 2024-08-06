@@ -12,7 +12,8 @@ from starlette.websockets import WebSocketDisconnect
 # Local Imports
 from ..db.types.user import User
 from ..config import CONFIG
-from ..models.validation import RegisterInput, LoginInput
+from ..models import PrivateUser
+from ..models.validation import RegisterInput, LoginInput, RegisterInputData, LoginInputData
 from .base_worker import BaseWorker
 from ..db import Database
 
@@ -87,7 +88,7 @@ class UsersWorker(BaseWorker):
         """
         # Validate data
         try:
-            data = RegisterInput(**data)
+            data: RegisterInput = RegisterInput(**data)
         except ValidationError as e:
             await self.connection.send_json(
                 {
@@ -96,6 +97,9 @@ class UsersWorker(BaseWorker):
                 }
             )
             return
+
+        # Strip the action from the data
+        data: RegisterInputData = data.data
 
         # Do user password checks before anything else to minimise in-flight time for password
         if len(data.password) > CONFIG.user_security.password_maximum_length or len(data.password) < CONFIG.user_security.password_minimum_length:
@@ -190,10 +194,15 @@ class UsersWorker(BaseWorker):
         # Create user
         user: User = await self._database.users.new(data.email, data.username, data.password)
 
+        # Convert to private and send
+        user_data: PrivateUser = await user.to_private()
+
+        # Construct the response
+
         await self.connection.send_json(
             {
                 "action": "new",
-                "data": await user.to_private()
+                "data": user_data.model_dump(mode="json")
             }
         )
 

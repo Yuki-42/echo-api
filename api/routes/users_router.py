@@ -2,6 +2,7 @@
 Contains the user routes.
 """
 from typing import Annotated
+from uuid import UUID
 
 # Third Party Imports
 from fastapi import APIRouter, Depends, WebSocket
@@ -64,93 +65,27 @@ async def users_ws(
     await worker.run()
 
 
-@users_router.post(
-    "/", tags=["users"], responses={
-        409: {"description": "User already exists"},
-        430: {"description": "Password does not meet requirements"}
-    }
-)
-async def create_user(
-        data: CreateUserData,
-        request: Request,
+@users_router.post("/<verification_code>", tags=["users"])
+async def verify_user(
+        verification_code: str,
         database: Annotated[Database, Depends(Database.new)]
-) -> PrivateUserModel:
+):
     """
-    Creates a new user.
+    Verifies a user's email address.
     """
-    # Do user password checks before anything else to minimise in-flight time for password
-    if len(data.password) > CONFIG.user_security.password_maximum_length:
-        raise HTTPException(status_code=430, detail="Password too long")
-
-    if len(data.password) < CONFIG.user_security.password_minimum_length:
-        raise HTTPException(status_code=430, detail="Password too short")
-
-    # Count numbers of each character type
-    uppercase: int = 0
-    lowercase: int = 0
-    number: int = 0
-    special: int = 0
-
-    for char in data.password:
-        if char.isupper():
-            uppercase += 1
-        elif char.islower():
-            lowercase += 1
-        elif char.isdigit():
-            number += 1
-        else:
-            special += 1
-
-    if uppercase < CONFIG.user_security.password_require_uppercase:
-        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_uppercase} uppercase characters")
-
-    if lowercase < CONFIG.user_security.password_require_lowercase:
-        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_lowercase} lowercase characters")
-
-    if number < CONFIG.user_security.password_require_number:
-        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_number} number characters")
-
-    if special < CONFIG.user_security.password_require_special_character:
-        raise HTTPException(status_code=430, detail=f"Password requires {CONFIG.user_security.password_require_special_character} special characters")
-
-    # Get database connection
-    db: Database = request.state.db
-
-    # Check if the user exists
-    user: User = await db.users.email_get(data.email)
-
-    if user is not None:
-        raise HTTPException(status_code=409, detail="User already exists")
-
-    # Create user
-    user = await db.users.new(data.email, data.username, data.password)
-
-    # Close database connection
-    await database.close()
-
-    return await user.to_private()
-
-
-@users_router.put("/", tags=["users"])
-async def update_user(
-        data: CreateUserData,
-        request: Request,
-        database: Annotated[Database, Depends(Database.new)]
-) -> UserModel:
-    """
-    Updates a user.
-    """
-
-    # Check if the user exists
-    user: User = await database.users.email_get(data.email)
+    # Get user
+    user: VerificationCode = await database.secure.get_verification_code(verification_code)
 
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Update user
-    user = await database.users.update(user.id, data.email, data.username, data.password)
+    # Check if the validation code is expired
 
-    return await user.to_public()
+
+
+    await user.set_is_verified(True)
+
+    # Return user
 
 # @users_router.post("/login", tags=["users"])
 # async def login_user(
