@@ -151,7 +151,8 @@ CREATE TABLE secured.two_factor
 CREATE TABLE secured.verification_codes
 (
     user_id uuid PRIMARY KEY,
-    code    VARCHAR(256) NOT NULL
+    code    VARCHAR(256) NOT NULL,
+    expires TIMESTAMP    NOT NULL
 );
 
 /* Create checks */
