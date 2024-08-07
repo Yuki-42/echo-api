@@ -5,6 +5,7 @@ Contains the admin WS test endpoints.
 # Standard Library Imports
 from hashlib import md5
 from unittest import IsolatedAsyncioTestCase
+from uuid import UUID
 
 # Third Party Imports
 from fastapi.testclient import TestClient
@@ -147,3 +148,20 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         assert isinstance(data["data"], list)
         assert len(data["data"]) == 10
 
+    def test_admin_delete_user_bad_data(self) -> None:
+        """
+        Test the admin WS delete_user action raises bad data when no data is provided.
+        """
+        # Run authenticated test
+        assert run_authenticated_test({"action": "delete_user"}) == {"error": "Invalid data."}
+
+    def test_admin_delete_user(self) -> None:
+        """
+        Test the admin WS delete_user action.
+        """
+        # Get a user using the get_users action
+        data: dict = run_authenticated_test({"action": "get_users", "data": {"page": 0, "page_size": 1}})
+        user_id: UUID = UUID(data["data"][0]["id"])
+
+        # Run authenticated test
+        assert run_authenticated_test({"action": "delete_user", "data": {"id": user_id}}) == {"action": "delete_user", "data": {"success": True}}

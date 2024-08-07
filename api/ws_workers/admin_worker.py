@@ -86,4 +86,4 @@ class AdminWorker(BaseWorker):
         """
         Delete a user.
         """
-        pass
+        # Verify input model
