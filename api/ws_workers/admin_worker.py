@@ -59,9 +59,6 @@ class AdminWorker(BaseWorker):
         Get users.
         """
         # Verify input model
-        print(data)
-        print(GetUsersInput.schema())
-        print(GetUsersInputData.schema())
         try:
             data: GetUsersInput = GetUsersInput(**data)
         except ValidationError:
@@ -81,7 +78,7 @@ class AdminWorker(BaseWorker):
         await self.connection.send_json(
             {
                 "action": "users",
-                "data": users
+                "data": [user.model_dump(mode="json") for user in users]
             }
         )
 

@@ -22,9 +22,8 @@ __all__ = [
 
 
 def run_authenticated_test(
-        message: dict,
-        expected: dict
-) -> None:
+        message: dict
+) -> dict:
     """
     Runs a test with data to send and expected responses.
     """
@@ -51,12 +50,7 @@ def run_authenticated_test(
 
         # Perform test
         connection.send_json(message)
-        data: dict = connection.receive_json()
-
-        print(f"Message: {message}")
-        print(f"Expected: {expected}")
-        print(f"Actual: {data}")
-        assert data == expected
+        return connection.receive_json()
 
 
 class TestAdminWs(IsolatedAsyncioTestCase):
@@ -132,27 +126,24 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         Test the admin WS ping action.
         """
         # Run authenticated test
-        run_authenticated_test(
-            {"action": "ping"},
-            {"action": "pong"}
-        )
+        assert run_authenticated_test({"action": "ping"}) == {"action": "pong"}
 
     def test_admin_get_users_bad_data(self) -> None:
         """
         Test the admin WS get_users action raises bad data when no page info is provided.
         """
         # Run authenticated test
-        run_authenticated_test(
-            {"action": "get_users"},
-            {"error": "Invalid data."}
-        )
+        assert run_authenticated_test({"action": "get_users"}) == {"error": "Invalid data."}
 
     def test_admin_get_users(self) -> None:
         """
         Test the admin WS get_users action.
         """
         # Run authenticated test
-        run_authenticated_test(
-            {"action": "get_users", "data": {"page": 1, "page_size": 10}},
-            {"action": "get_users", "data": []}
-        )
+        data: dict = run_authenticated_test({"action": "get_users", "data": {"page": 0, "page_size": 10}})
+
+        # Check the response
+        assert "data" in data
+        assert isinstance(data["data"], list)
+        assert len(data["data"]) == 10
+

@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-class GetUsersInputData(BaseMessage):
+class GetUsersInputData(BaseModel):
     """
     Model for getting users.
     """
@@ -27,7 +27,7 @@ class GetUsersInputData(BaseMessage):
     page_size: int
 
 
-class GetUsersInput(BaseModel):
+class GetUsersInput(BaseMessage):
     """
     Model for getting users.
     """
