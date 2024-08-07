@@ -22,43 +22,25 @@ class AdminWorker(BaseWorker):
     Worker to handle admin WebSocket connections.
     """
 
-    async def run(self) -> None:
+    async def handle_message(
+            self,
+            data: dict
+    ) -> None:
         """
-        Run the worker.
-        """
-        while True:
-            try:
-                data: dict = await self.connection.receive_json()  # THIS IS THROWING A 1000 ERROR. This means that the websocket is already closed
-            except WebSocketDisconnect:
-                await self.connection.close()
-                return  # Gracefully handle disconnect
+        Handle a message from the client.
 
-            # Ensure that the base level spec is present
-            if "action" not in data:
+        Args:
+            data (dict): The data to handle.
+        """
+        # Match action
+        action: str = data.get("action")
+
+        match action:
+
+            case _:
                 await self.connection.send_json(
-                    {"error": "No action provided."}
+                    {"error": "Invalid action."}
                 )
-                continue
-
-            # Match action
-            action: str = data.get("action")
-
-            match action:
-                case "ping":
-                    await self.connection.send_json(
-                        {"action": "pong"}
-                    )
-                case "get_users":
-                    await self.connection.send_json(
-                        {"action": "pong"}
-                    )
-                case "delete_user":
-                    await self.connection.close()
-                    break
-                case _:
-                    await self.connection.send_json(
-                        {"error": "Invalid action."}
-                    )
 
     async def _get_users(self) -> None:
         """

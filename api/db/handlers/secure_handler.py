@@ -12,6 +12,7 @@ from psycopg.sql import SQL
 
 # Local Imports
 from .base_handler import BaseHandler
+from ..types.secured.verification_code import VerificationCode
 from ...models.secure import Password, Token
 from ...security.scheme import crypt_context
 
@@ -90,7 +91,7 @@ class SecureHandler(BaseHandler):
             # Insert new password
             await cursor.execute(
                 SQL(
-                    r"INSERT INTO secured.passwords (user_id, password) VALUES (%s, %s);",
+                    r"INSERT INTO secured.passwords (user_id, hash) VALUES (%s, %s);",
                 ),
                 [
                     user_id,
@@ -115,7 +116,7 @@ class SecureHandler(BaseHandler):
         async with self.connection.cursor() as cursor:
             await cursor.execute(
                 SQL(
-                    r"SELECT password, last_updated FROM secured.passwords WHERE user_id = %s;",
+                    r"SELECT hash, last_updated FROM secured.passwords WHERE user_id = %s;",
                 ),
                 [
                     user_id,
@@ -183,6 +184,5 @@ class SecureHandler(BaseHandler):
             self,
             validation_token: str
     ) -> VerificationCode:
-
 
         pass

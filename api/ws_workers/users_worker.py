@@ -12,7 +12,7 @@ from starlette.websockets import WebSocketDisconnect
 # Local Imports
 from ..db.types.user import User
 from ..config import CONFIG
-from ..models import PrivateUser
+from ..models import PrivateUser, User as PublicUser
 from ..models.validation import RegisterInput, LoginInput, RegisterInputData, LoginInputData
 from .base_worker import BaseWorker
 from ..db import Database
@@ -40,38 +40,29 @@ class UsersWorker(BaseWorker):
         super().__init__(connection)
         self._database = database
 
-    async def run(self) -> None:
+    async def handle_message(
+            self,
+            data: dict
+    ) -> None:
         """
-        Run the worker.
+        Handle a message from the client.
+
+        Args:
+            data (dict): The data to handle.
         """
-        while True:
-            try:
-                data: dict = await self.connection.receive_json()
-            except WebSocketDisconnect:
-                await self.connection.close()
-                return
+        action: str = data["action"]
 
-            if "action" not in data:
-                await self.connection.send_json(
-                    {
-                        "error": "No action provided."
-                    }
-                )
-                continue
-
-            action: str = data["action"]
-
-            match action:
-                case "new":
-                    await self.new_user(data)
-                case "login":
-                    await self.login_user(data)
-                case "logout":
-                    await self.logout_user(data)
-                case "me":
-                    await self.me(data)
-                case "details":
-                    await self.details(data)
+        match action:
+            case "new":
+                await self.new_user(data)
+            case "login":
+                await self.login_user(data)
+            case "logout":
+                await self.logout_user(data)
+            case "me":
+                await self.me(data)
+            case "details":
+                await self.details(data)
 
     async def new_user(
             self,
@@ -195,10 +186,9 @@ class UsersWorker(BaseWorker):
         user: User = await self._database.users.new(data.email, data.username, data.password)
 
         # Convert to private and send
-        user_data: PrivateUser = await user.to_private()
+        user_data: PublicUser = await user.to_public()
 
         # Construct the response
-
         await self.connection.send_json(
             {
                 "action": "new",
