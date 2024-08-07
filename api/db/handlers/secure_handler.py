@@ -184,5 +184,4 @@ class SecureHandler(BaseHandler):
             self,
             validation_token: str
     ) -> VerificationCode:
-
         pass

@@ -68,3 +68,4 @@ class Database:
         Close the database connection.
         """
         await self._connection.close()
+

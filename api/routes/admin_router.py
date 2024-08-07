@@ -4,13 +4,15 @@ Administrator WS API Router
 # Standard Library Imports
 from hashlib import md5
 from secrets import token_bytes
+from typing import Annotated
 
 # Third Party Imports
-from fastapi import APIRouter, WebSocket
+from fastapi import APIRouter, WebSocket, Depends
 from rsa import encrypt
 from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
+from ..db import Database
 from ..config import CONFIG
 from ..ws_workers import AdminWorker
 
@@ -29,7 +31,8 @@ administrator_router: APIRouter = APIRouter(
 # Create WS connection route
 @administrator_router.websocket("/")
 async def admin_ws(
-        websocket: WebSocket
+        websocket: WebSocket,
+        database: Annotated[Database, Depends(Database.new)]
 ) -> None:
     """
     Route to establish a WebSocket connection for the administrator.
@@ -67,6 +70,7 @@ async def admin_ws(
 
     # We now know that the user is authenticated for this session we will accept the event loop and hand it off to the processor
     worker: AdminWorker = AdminWorker(
-        websocket
+        websocket,
+        database
     )
     await worker.run()

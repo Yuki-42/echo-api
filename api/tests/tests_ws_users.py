@@ -129,8 +129,6 @@ class TestUserWs(IsolatedAsyncioTestCase):
             # Print the response
             data: dict = connection.receive_json()
 
-            print(data)
-
             # Check the response
             assert data["action"] == "new"
             assert data["data"]["email"] == user_data["data"]["email"]

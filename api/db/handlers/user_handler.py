@@ -187,3 +187,36 @@ class UsersHandler(BaseHandler):
         Returns:
             User: Live user view.
         """
+
+    async def get(
+            self,
+            page: int,
+            page_size: int
+    ) -> list[User]:
+        """
+        Get users.
+
+        Args:
+            page (int): Page number.
+            page_size (int): Page size.
+
+        Returns:
+            list[User]: List of users.
+        """
+        # Create a cursor
+        cursor: AsyncCursor
+        async with self.connection.cursor() as cursor:
+            # Execute
+            await cursor.execute(
+                SQL(
+                    r"SELECT id, created_at FROM users ORDER BY created_at DESC LIMIT %s OFFSET %s;",
+                ),
+                [
+                    page_size,
+                    page * page_size
+                ]
+            )
+            rows: list[DictRow] = await cursor.fetchall()
+
+        # Return
+        return [User(self.connection, row) for row in rows]

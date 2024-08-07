@@ -1,7 +1,6 @@
 """
 Contains models used for validation of data in the users WS.
 """
-from uuid import UUID
 
 # Standard Library Imports
 
@@ -9,12 +8,16 @@ from uuid import UUID
 from pydantic import BaseModel
 
 # Local Imports
-from .bases import BaseMessage, BaseError
+from .bases import BaseMessage
 from ..user import User
 
 # Constants
 __all__ = [
-
+    "RegisterInputData",
+    "RegisterInput",
+    "RegisterOutputData",
+    "LoginInputData",
+    "LoginInput",
 ]
 
 

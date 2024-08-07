@@ -7,15 +7,14 @@ Contains the WS Users Worker.
 # Third Party Imports
 from fastapi import WebSocket
 from pydantic import ValidationError
-from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
-from ..db.types.user import User
-from ..config import CONFIG
-from ..models import PrivateUser, User as PublicUser
-from ..models.validation import RegisterInput, LoginInput, RegisterInputData, LoginInputData
 from .base_worker import BaseWorker
+from ..config import CONFIG
 from ..db import Database
+from ..db.types.user import User
+from ..models import User as PublicUser
+from ..models.validation import RegisterInput, RegisterInputData
 
 # Constants
 __all__ = [
@@ -27,7 +26,6 @@ class UsersWorker(BaseWorker):
     """
     Worker to handle user WebSocket connections.
     """
-    _database: Database
 
     def __init__(
             self,
@@ -37,8 +35,7 @@ class UsersWorker(BaseWorker):
         """
         Initialise the worker.
         """
-        super().__init__(connection)
-        self._database = database
+        super().__init__(connection, database)
 
     async def handle_message(
             self,
@@ -171,7 +168,7 @@ class UsersWorker(BaseWorker):
             )
 
         # Check if the user exists
-        user: User = await self._database.users.email_get(data.email)
+        user: User = await self.database.users.email_get(data.email)
 
         if user is not None:
             await self.connection.send_json(
@@ -183,7 +180,7 @@ class UsersWorker(BaseWorker):
             return
 
         # Create user
-        user: User = await self._database.users.new(data.email, data.username, data.password)
+        user: User = await self.database.users.new(data.email, data.username, data.password)
 
         # Convert to private and send
         user_data: PublicUser = await user.to_public()

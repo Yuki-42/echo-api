@@ -51,8 +51,12 @@ def run_authenticated_test(
 
         # Perform test
         connection.send_json(message)
+        data: dict = connection.receive_json()
 
-        assert connection.receive_json() == expected
+        print(f"Message: {message}")
+        print(f"Expected: {expected}")
+        print(f"Actual: {data}")
+        assert data == expected
 
 
 class TestAdminWs(IsolatedAsyncioTestCase):
@@ -131,4 +135,24 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         run_authenticated_test(
             {"action": "ping"},
             {"action": "pong"}
+        )
+
+    def test_admin_get_users_bad_data(self) -> None:
+        """
+        Test the admin WS get_users action raises bad data when no page info is provided.
+        """
+        # Run authenticated test
+        run_authenticated_test(
+            {"action": "get_users"},
+            {"error": "Invalid data."}
+        )
+
+    def test_admin_get_users(self) -> None:
+        """
+        Test the admin WS get_users action.
+        """
+        # Run authenticated test
+        run_authenticated_test(
+            {"action": "get_users", "data": {"page": 1, "page_size": 10}},
+            {"action": "get_users", "data": []}
         )

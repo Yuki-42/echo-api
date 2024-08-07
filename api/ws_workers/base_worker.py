@@ -9,6 +9,7 @@ from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
+from ..db import Database
 
 # Constants
 __all__ = [
@@ -21,15 +22,18 @@ class BaseWorker:
     Base worker class.
     """
     connection: WebSocket
+    database: Database
 
     def __init__(
             self,
-            connection: WebSocket
+            connection: WebSocket,
+            database: Database
     ) -> None:
         """
         Initialise the worker.
         """
         self.connection = connection
+        self.database = database
 
     async def run(self) -> None:
         """
