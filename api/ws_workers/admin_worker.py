@@ -5,15 +5,14 @@ Contains the WS Admin Worker.
 # Standard Library Imports
 
 # Third Party Imports
-from fastapi import WebSocket
 from pydantic import ValidationError
-from starlette.websockets import WebSocketDisconnect
 
 # Local Imports
 from .base_worker import BaseWorker
+from ..db.exceptions import UserDoesNotExist
 from ..db.types.user import User
-from ..models.validation.admin import GetUsersInput, GetUsersInputData
 from ..models.user import User as PublicUser
+from ..models.validation.admin import DeleteUserInput, GetUsersInput
 
 # Constants
 __all__ = [
@@ -41,11 +40,11 @@ class AdminWorker(BaseWorker):
 
         match action:
             case "get_users":
-                await self._get_users(
-                    data
-                )
+                await self._get_users(data)
+            case "get_user":
+                await self._get_user(data)
             case "delete_user":
-                await self._delete_user()
+                await self._delete_user(data)
             case _:
                 await self.connection.send_json(
                     {"error": "Invalid action."}
@@ -57,6 +56,9 @@ class AdminWorker(BaseWorker):
     ) -> None:
         """
         Get users.
+
+        Args:
+            data (dict): Data.
         """
         # Verify input model
         try:
@@ -82,8 +84,52 @@ class AdminWorker(BaseWorker):
             }
         )
 
-    async def _delete_user(self) -> None:
+    async def _get_user(
+            self,
+            data: dict
+    ) -> None:
+        """
+        Get a user.
+
+        Args:
+            data (dict): Data.
+        """
+
+    async def _delete_user(
+            self,
+            data: dict
+    ) -> None:
         """
         Delete a user.
+
+        Args:
+            data (dict): Data.
         """
         # Verify input model
+        try:
+            data: DeleteUserInput = DeleteUserInput(**data)
+        except ValidationError:
+            await self.connection.send_json(
+                {"error": "Invalid data."}
+            )
+            return
+
+        # Delete user
+        try:
+            await self.database.users.delete(
+                data.data.id
+            )
+        except UserDoesNotExist:
+            await self.connection.send_json(
+                {"error": "User does not exist."}
+            )
+            return
+
+        # Send success
+        await self.connection.send_json(
+            {
+                "action": "delete_user",
+                "data": {"success": True}
+            }
+        )
+

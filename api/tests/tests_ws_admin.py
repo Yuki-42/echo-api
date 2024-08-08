@@ -161,7 +161,7 @@ class TestAdminWs(IsolatedAsyncioTestCase):
         """
         # Get a user using the get_users action
         data: dict = run_authenticated_test({"action": "get_users", "data": {"page": 0, "page_size": 1}})
-        user_id: UUID = UUID(data["data"][0]["id"])
+        user_id: str = data["data"][0]["id"]
 
         # Run authenticated test
         assert run_authenticated_test({"action": "delete_user", "data": {"id": user_id}}) == {"action": "delete_user", "data": {"success": True}}

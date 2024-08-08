@@ -155,6 +155,38 @@ class UsersHandler(BaseHandler):
         # Return
         return User(self.connection, row)
 
+    async def delete(
+            self,
+            id: UUID
+    ) -> None:
+        """
+        Delete a user.
+
+        Args:
+            id (UUID): User
+
+        Raises:
+            UserDoesNotExist: Requested user does not exist.
+
+        Returns:
+            None
+        """
+        # Check if the user exists
+        if not await self.id_exists(id):
+            raise UserDoesNotExist(id)
+
+        # Create a cursor
+        async with self.connection.cursor() as cursor:
+            # Execute
+            await cursor.execute(
+                SQL(
+                    r"DELETE FROM users WHERE id = %s;",
+                ),
+                [
+                    str(id),
+                ]
+            )
+
     async def new(
             self,
             email: str,
