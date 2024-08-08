@@ -122,6 +122,13 @@ class TestAdminWs(IsolatedAsyncioTestCase):
             # Check auth fail
             assert connection.receive_json() == {"message": "Authentication failed."}
 
+    def test_admin_bad_data(self) -> None:
+        """
+        Tests an invalid action is handled correctly.
+        """
+        # Run authenticated test
+        assert run_authenticated_test({}) == {"error": "No action provided."}
+
     def test_admin_ping(self) -> None:
         """
         Test the admin WS ping action.
