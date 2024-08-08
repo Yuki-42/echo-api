@@ -5,6 +5,7 @@ Contains the Users handler.
 # Standard Library Imports
 from hashlib import sha1
 from os import urandom
+from uuid import UUID
 
 # Third Party Imports
 from psycopg import AsyncCursor
@@ -12,6 +13,7 @@ from psycopg.rows import DictRow
 from psycopg.sql import SQL
 
 # Local Imports
+from ..exceptions.users import UserAlreadyExists, UserDoesNotExist
 from .base_handler import BaseHandler
 from .secure_handler import SecureHandler
 from ..types.user import User
@@ -27,15 +29,70 @@ class UsersHandler(BaseHandler):
     Users handler.
     """
 
+    async def id_exists(
+            self,
+            id: UUID
+    ) -> bool:
+        """
+        Checks if the user exists. Is **slightly** faster than fetching the user.
+
+        Args:
+            id (UUID): User ID.
+
+        Returns:
+            bool: User exists.
+        """
+        # Create a cursor
+        async with self.connection.cursor() as cursor:
+            # Execute
+            await cursor.execute(
+                SQL(
+                    r"SELECT 1 FROM users WHERE id = %s;",
+                ),
+                [
+                    str(id),
+                ]
+            )
+            return bool(await cursor.fetchone())
+
+    async def email_exists(
+            self,
+            email: str
+    ) -> bool:
+        """
+        Checks if the user exists. Is **slightly** faster than fetching the user.
+
+        Args:
+            email (str): User email.
+
+        Returns:
+            bool: User exists.
+        """
+        # Create a cursor
+        async with self.connection.cursor() as cursor:
+            # Execute
+            await cursor.execute(
+                SQL(
+                    r"SELECT 1 FROM users WHERE email = %s;",
+                ),
+                [
+                    email,
+                ]
+            )
+            return bool(await cursor.fetchone())
+
     async def id_get(
             self,
-            user_id: str
+            id: UUID
     ) -> User | None:
         """
         Get user by ID.
 
         Args:
-            user_id (str): User ID.
+            id (str): User ID.
+
+        Raises:
+            UserDoesNotExist: Requested user does not exist.
 
         Returns:
             User: User.
@@ -48,13 +105,13 @@ class UsersHandler(BaseHandler):
                     r"SELECT id, created_at FROM users WHERE id = %s;  /* Only select the unchanging columns, everything else is grabbed on-request */",
                 ),
                 [
-                    user_id,
+                    str(id),
                 ]
             )
             row: DictRow = await cursor.fetchone()
 
         if row is None:
-            return None
+            raise UserDoesNotExist(id)
 
         # Return
         return User(self.connection, row)
@@ -68,6 +125,9 @@ class UsersHandler(BaseHandler):
 
         Args:
             email (str): User email.
+
+        Raises:
+            UserDoesNotExist: Requested user does not exist.
 
         Returns:
             User: User.
@@ -90,7 +150,7 @@ class UsersHandler(BaseHandler):
         await cursor.close()
 
         if row is None:
-            return None
+            raise UserDoesNotExist(email)
 
         # Return
         return User(self.connection, row)
@@ -109,11 +169,18 @@ class UsersHandler(BaseHandler):
             username (str): User username.
             password (str): User password.
 
+        Raises:
+            UserAlreadyExists: A user already exists with that email.
+
         Returns:
             User: Live user view.
         """
         # Hash the password
         password = SecureHandler.hash_password(password)  # This overwrites the value in memory
+
+        # Check if the user exists by email
+        if await self.email_exists(email):
+            raise UserAlreadyExists(email)
 
         # Calculate the user's tag (this is a 6 digit number added to the end of their username)
         #

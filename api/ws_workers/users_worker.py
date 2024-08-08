@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from .base_worker import BaseWorker
 from ..config import CONFIG
 from ..db import Database
+from ..db.exceptions import UserAlreadyExists
 from ..db.types.user import User
 from ..models import User as PublicUser
 from ..models.validation import RegisterInput, RegisterInputData
@@ -167,10 +168,10 @@ class UsersWorker(BaseWorker):
                 }
             )
 
-        # Check if the user exists
-        user: User = await self.database.users.email_get(data.email)
-
-        if user is not None:
+        try:
+            # Create user
+            user: User = await self.database.users.new(data.email, data.username, data.password)
+        except UserAlreadyExists:
             await self.connection.send_json(
                 {
                     "action": "new",
@@ -178,9 +179,6 @@ class UsersWorker(BaseWorker):
                 }
             )
             return
-
-        # Create user
-        user: User = await self.database.users.new(data.email, data.username, data.password)
 
         # Convert to private and send
         user_data: PublicUser = await user.to_public()
