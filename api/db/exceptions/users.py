@@ -25,7 +25,7 @@ class UserDoesNotExist(DatabaseException):
 
     def __init__(
             self,
-            identifier: Any[str, int, UUID]
+            identifier: str | int | UUID
     ) -> None:
         """
         Initialise the exception.
@@ -40,7 +40,7 @@ class UserAlreadyExists(DatabaseException):
     """
     def __init__(
             self,
-            identifier: Any[str, int, UUID]
+            identifier: str | int | UUID
     ) -> None:
         """
         Initialise the exception.

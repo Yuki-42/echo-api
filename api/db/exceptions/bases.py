@@ -21,12 +21,12 @@ class DatabaseException(Exception):
     Base exception for database errors.
     """
     table: str
-    identifier: Any[str, int, UUID]
+    identifier: str | int | UUID
 
     def __init__(
             self,
             table: str,
-            identifier: Any[str, int, UUID]
+            identifier: str | int | UUID
     ) -> None:
         """
         Initialise the exception.
